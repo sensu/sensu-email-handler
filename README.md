@@ -31,15 +31,14 @@ Usage:
   sensu-email-handler [flags]
 
 Flags:
-  -d, --destEmail string      The destination email address
   -e, --event string          The JSON event file to process
-  -f, --fromEmail string      The from email address
+  -f, --fromEmail string      The 'from' email address
   -h, --help                  help for sensu-email-handler
   -s, --smtpHost string       The SMTP host to use to send to send email
   -p, --smtpPassword string   The SMTP password
   -P, --smtpPort uint16       The SMTP server port (default 587)
   -u, --smtpUsername string   The SMTP username
-  -S, --subject string        The email subjetc
+  -t, --toEmail string        The 'to' email address
 ```
 
 If the `--event` option is specified the event will be read from the file mentioned, otherwise the event
