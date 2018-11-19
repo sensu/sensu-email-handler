@@ -19,7 +19,7 @@ var (
 	smtpUsername  string
 	smtpPassword  string
 	smtpPort      uint16
-	destEmail     string
+	toEmail       string
 	fromEmail     string
 	subject       string
 	eventJsonFile string
@@ -40,9 +40,8 @@ func main() {
 	cmd.Flags().StringVarP(&smtpUsername, "smtpUsername", "u", "", "The SMTP username")
 	cmd.Flags().StringVarP(&smtpPassword, "smtpPassword", "p", "", "The SMTP password")
 	cmd.Flags().Uint16VarP(&smtpPort, "smtpPort", "P", 587, "The SMTP server port")
-	cmd.Flags().StringVarP(&destEmail, "destEmail", "d", "", "The destination email address")
-	cmd.Flags().StringVarP(&fromEmail, "fromEmail", "f", "", "The from email address")
-	cmd.Flags().StringVarP(&subject, "subject", "S", "", "The email subjetc")
+	cmd.Flags().StringVarP(&toEmail, "toEmail", "t", "", "The 'to' email address")
+	cmd.Flags().StringVarP(&fromEmail, "fromEmail", "f", "", "The 'from' email address")
 	cmd.Flags().StringVarP(&eventJsonFile, "event", "e", "", "The JSON event file to process")
 
 	cmd.Execute()
@@ -92,7 +91,7 @@ func checkArgs() error {
 	if len(smtpHost) == 0 {
 		return errors.New("missing smtp host")
 	}
-	if len(destEmail) == 0 {
+	if len(toEmail) == 0 {
 		return errors.New("missing destination email address")
 	}
 	if len(smtpUsername) == 0 {
@@ -121,12 +120,12 @@ func sendEmail(event *types.Event) error {
 		return bodyErr
 	}
 
-	msg := []byte("To: " + destEmail + "\r\n" +
+	msg := []byte("To: " + toEmail + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"\r\n" +
 		body + "\r\n")
 
-	return smtp.SendMail(smtpAddress, smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost), fromEmail, []string{destEmail}, msg)
+	return smtp.SendMail(smtpAddress, smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost), fromEmail, []string{toEmail}, msg)
 }
 
 func resolveTemplate(templateValue string, event *types.Event) (string, error) {
