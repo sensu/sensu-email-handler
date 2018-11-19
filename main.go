@@ -25,7 +25,7 @@ var (
 	eventJsonFile string
 	stdin         *os.File
 
-	emailSubjectTemplate = "Sensu Alert for entity {{.Entity.System.Hostname}} - {{.Check.Name}} - {{.Check.State}}"
+	emailSubjectTemplate = "Sensu Alert for entity {{.Entity.System.Hostname}} - {{.Check.State}}"
 	emailBodyTemplate    = "{{.Check.Output}}"
 )
 

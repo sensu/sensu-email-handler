@@ -24,7 +24,7 @@
       "entity:example-entity"
     ],
     "system": {
-      "hostname": "example-entity",
+      "hostname": "example-host",
       "os": "linux",
       "platform": "ubuntu",
       "platform_family": "debian",
