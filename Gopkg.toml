@@ -35,4 +35,4 @@
 
 [[constraint]]
   name = "github.com/sensu/sensu-go"
-  version = "2.0.0-beta.8-1"
+  revision = "0150bbcb0a2b70f720fa20a9a47c7e91bacd72b1"

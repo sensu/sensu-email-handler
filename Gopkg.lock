@@ -94,17 +94,16 @@
   revision = "2315d5715e36303a941d907f038da7f7c44c773b"
 
 [[projects]]
-  digest = "1:50baa4e6077f79de41c5f28d1e2093df06fe1f46dade771b86a5a5d42b8cf880"
+  digest = "1:b9cc662e15cbe325399cb8a8610962a4b8373512c2f3318d0b30e856ca081c64"
   name = "github.com/sensu/sensu-go"
   packages = [
+    "api/core/v2",
     "js",
     "types",
-    "types/dynamic",
     "util/strings",
   ]
   pruneopts = "UT"
-  revision = "c07579c0b20f5f5e12788fb0704c3a9138882b58"
-  version = "2.0.0-beta.8-1"
+  revision = "0150bbcb0a2b70f720fa20a9a47c7e91bacd72b1"
 
 [[projects]]
   digest = "1:645cabccbb4fa8aab25a956cbcbdf6a6845ca736b2c64e197ca7cbb9d210b939"
