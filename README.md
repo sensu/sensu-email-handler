@@ -29,7 +29,7 @@ Example Sensu Go definition:
     },
     "spec": {
         "type": "pipe",
-        "command": "sensu-email-handler -h",
+        "command": "sensu-email-handler -f from@example.com -t to@example.com -s smtp.example.com -u user -p password",
         "timeout": 10,
         "filters": [
             "is_incident",
