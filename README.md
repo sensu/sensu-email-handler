@@ -1,48 +1,54 @@
-# Sensu Go Slack Handler
+# Sensu Go CHANGEME Plugin
+TravisCI: [![TravisCI Build Status](https://travis-ci.org/CHANGEME/sensu-CHANGEME.svg?branch=master)](https://travis-ci.org/CHANGEME/sensu-CHANGEME)
 
-The Sensu slack handler is a [Sensu Event Handler][1] that sends an email using a SMTP server.
+TODO: Description.
 
 ## Installation
 
-Download the latest code from github.com:
-```
-go get github.com/fguimond/sensu-email-handler
-```
+Download the latest version of the sensu-CHANGEME from [releases][1],
+or create an executable script from this source.
 
-Build the plugin:
+From the local path of the sensu-CHANGEME repository:
+
 ```
-go build -o /usr/local/bin/sensu-email-handler main.go
+go build -o /usr/local/bin/sensu-CHANGEME main.go
 ```
 
 ## Configuration
 
-Example Sensu Go handler definition:
+Example Sensu Go definition:
 
-*TDB*
+```json
+{
+    "api_version": "core/v2",
+    "type": "CHANGEME",
+    "metadata": {
+        "namespace": "default",
+        "name": "CHANGEME"
+    },
+    "spec": {
+        "...": "..."
+    }
+}
+```
 
-## Usage examples
+## Usage Examples
 
 Help:
 
 ```
-The Sensu Go Email handler for sending an email notification
+The Sensu Go CHANGEME for x
 
 Usage:
-  sensu-email-handler [flags]
+  sensu-CHANGEME [flags]
 
 Flags:
-  -e, --event string          The JSON event file to process
-  -f, --fromEmail string      The 'from' email address
-  -h, --help                  help for sensu-email-handler
-  -s, --smtpHost string       The SMTP host to use to send to send email
-  -p, --smtpPassword string   The SMTP password
-  -P, --smtpPort uint16       The SMTP server port (default 587)
-  -u, --smtpUsername string   The SMTP username
-  -t, --toEmail string        The 'to' email address
+  -f, --foo string   example
+  -h, --help         help for sensu-CHANGEME
 ```
 
-If the `--event` option is specified the event will be read from the file mentioned, otherwise the event
-will be read from the process' standard input (`os.Stdin`).
+## Contributing
 
-[1]: https://docs.sensu.io/sensu-core/2.0/reference/handlers/#how-do-sensu-handlers-work
-[2]: https://github.com/fguimond/sensu-email-handler
+See https://github.com/sensu/sensu-go/blob/master/CONTRIBUTING.md
+
+[1]: https://github.com/CHANGEME/sensu-CHANGEME/releases
