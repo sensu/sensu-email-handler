@@ -50,8 +50,13 @@ Usage:
   sensu-email-handler [flags]
 
 Flags:
-  -f, --foo string   example
-  -h, --help         help for sensu-email-handler
+  -t, --toEmail string        The 'to' email address
+  -f, --fromEmail string      The 'from' email address
+  -h, --help                  help for sensu-email-handler
+  -s, --smtpHost string       The SMTP host to use to send to send email
+  -p, --smtpPassword string   The SMTP password
+  -P, --smtpPort uint16       The SMTP server port (default 587)
+  -u, --smtpUsername string   The SMTP username
 ```
 
 ## Contributing

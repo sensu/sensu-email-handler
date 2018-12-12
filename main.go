@@ -5,27 +5,26 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/sensu/sensu-go/types"
-	"github.com/spf13/cobra"
 	"io/ioutil"
-	"log"
 	"net/smtp"
 	"os"
 	"text/template"
+
+	"github.com/sensu/sensu-go/types"
+	"github.com/spf13/cobra"
 )
 
 var (
-	smtpHost      string
-	smtpUsername  string
-	smtpPassword  string
-	smtpPort      uint16
-	toEmail       string
-	fromEmail     string
-	subject       string
-	eventJsonFile string
-	stdin         *os.File
+	smtpHost     string
+	smtpUsername string
+	smtpPassword string
+	smtpPort     uint16
+	toEmail      string
+	fromEmail    string
+	subject      string
+	stdin        *os.File
 
-	emailSubjectTemplate = "Sensu Alert for entity {{.Entity.System.Hostname}} - {{.Check.State}}"
+	emailSubjectTemplate = "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}"
 	emailBodyTemplate    = "{{.Check.Output}}"
 )
 
@@ -42,7 +41,6 @@ func main() {
 	cmd.Flags().Uint16VarP(&smtpPort, "smtpPort", "P", 587, "The SMTP server port")
 	cmd.Flags().StringVarP(&toEmail, "toEmail", "t", "", "The 'to' email address")
 	cmd.Flags().StringVarP(&fromEmail, "fromEmail", "f", "", "The 'from' email address")
-	cmd.Flags().StringVarP(&eventJsonFile, "event", "e", "", "The JSON event file to process")
 
 	cmd.Execute()
 }
@@ -53,31 +51,28 @@ func run(cmd *cobra.Command, args []string) error {
 		return validationError
 	}
 
-	log.Println("Executing with arguments:", args)
-
 	if stdin == nil {
 		stdin = os.Stdin
 	}
 
-	event := &types.Event{}
-	var eventJsonBytes []byte
-	var err error
-	if len(eventJsonFile) == 0 {
-		eventJsonBytes, err = ioutil.ReadAll(stdin)
-		log.Println("Event JSON:", eventJsonBytes)
-	} else {
-		//absoluteFilePath, _ := filepath.Abs(eventJsonFile)
-		eventJsonBytes, err = ioutil.ReadFile(eventJsonFile)
-	}
+	eventJSON, err := ioutil.ReadAll(stdin)
 	if err != nil {
-		return fmt.Errorf("Unexpected error: %s", err)
-	}
-	err = json.Unmarshal(eventJsonBytes, event)
-	if err != nil {
-		return fmt.Errorf("failed to unmarshal stdin data: %s", eventJsonBytes)
+		return fmt.Errorf("failed to read stdin: %s", err)
 	}
 
-	log.Println("Event", event)
+	event := &types.Event{}
+	err = json.Unmarshal(eventJSON, event)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal stdin data: %s", err)
+	}
+
+	if err = event.Validate(); err != nil {
+		return fmt.Errorf("failed to validate event: %s", err)
+	}
+
+	if !event.HasCheck() {
+		return fmt.Errorf("event does not contain check")
+	}
 
 	sendMailError := sendEmail(event)
 	if sendMailError != nil {
