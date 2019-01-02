@@ -22,6 +22,7 @@ var (
 	toEmail      string
 	fromEmail    string
 	subject      string
+	insecure     bool
 	stdin        *os.File
 
 	emailSubjectTemplate = "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}"
@@ -41,6 +42,7 @@ func main() {
 	cmd.Flags().Uint16VarP(&smtpPort, "smtpPort", "P", 587, "The SMTP server port")
 	cmd.Flags().StringVarP(&toEmail, "toEmail", "t", "", "The 'to' email address")
 	cmd.Flags().StringVarP(&fromEmail, "fromEmail", "f", "", "The 'from' email address")
+	cmd.Flags().BoolVarP(&insecure, "insecure", "i", false, "Use an insecure connection (unauthenticated on port 25)")
 
 	cmd.Execute()
 }
@@ -89,14 +91,15 @@ func checkArgs() error {
 	if len(toEmail) == 0 {
 		return errors.New("missing destination email address")
 	}
-	if len(smtpUsername) == 0 {
-		return errors.New("smtp username is empty")
-	}
-	if len(smtpPassword) == 0 {
-		return errors.New("smtp password is empty")
-	}
-	if len(smtpPassword) == 0 {
-		return errors.New("smtp password is empty")
+	if !insecure {
+		if len(smtpUsername) == 0 {
+			return errors.New("smtp username is empty")
+		}
+		if len(smtpPassword) == 0 {
+			return errors.New("smtp password is empty")
+		}
+	} else {
+		smtpPort = 25
 	}
 	if len(fromEmail) == 0 {
 		return errors.New("from email is empty")
@@ -115,12 +118,38 @@ func sendEmail(event *types.Event) error {
 		return bodyErr
 	}
 
-	msg := []byte("To: " + toEmail + "\r\n" +
-		"Subject: " + subject + "\r\n" +
-		"\r\n" +
-		body + "\r\n")
+	if insecure {
+		msg := "To: " + toEmail + "\r\n" +
+			"Subject: " + subject + "\r\n" +
+			"\r\n" +
+			body + "\r\n"
+		smtpconn, connErr := smtp.Dial(smtpAddress)
+		if connErr != nil {
+			return connErr
+		}
+		defer smtpconn.Close()
+		smtpconn.Mail(fromEmail)
+		smtpconn.Rcpt(toEmail)
+		smtpdata, dataErr := smtpconn.Data()
+		if dataErr != nil {
+			return dataErr
+		}
+		defer smtpdata.Close()
+		buf := bytes.NewBufferString(msg)
+		if _, dataErr = buf.WriteTo(smtpdata); dataErr != nil {
+			return dataErr
+		}
 
-	return smtp.SendMail(smtpAddress, smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost), fromEmail, []string{toEmail}, msg)
+		return nil
+	} else {
+		msg := []byte("To: " + toEmail + "\r\n" +
+			"Subject: " + subject + "\r\n" +
+			"\r\n" +
+			body + "\r\n")
+
+		return smtp.SendMail(smtpAddress, smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost), fromEmail, []string{toEmail}, msg)
+	}
+
 }
 
 func resolveTemplate(templateValue string, event *types.Event) (string, error) {
