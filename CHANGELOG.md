@@ -7,6 +7,9 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+### Added
+- Added option to allow for using insecure (port 25) email relays
+
 ## [0.0.2] - 2018-12-12
 
 ### Added
