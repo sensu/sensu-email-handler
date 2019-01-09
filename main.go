@@ -23,7 +23,7 @@ var (
 	fromEmail    string
 	subject      string
 	hookout      bool
-  insecure     bool
+        insecure     bool
 	stdin        *os.File
 
 	emailSubjectTemplate = "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}"
