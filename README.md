@@ -57,6 +57,7 @@ Flags:
   -p, --smtpPassword string   The SMTP password
   -P, --smtpPort uint16       The SMTP server port (default 587)
   -u, --smtpUsername string   The SMTP username
+  -H, --hookout               Include output from check hook(s)
   -i, --insecure              Use an insecure connection (unauthenticated on port 25)
 ```
 

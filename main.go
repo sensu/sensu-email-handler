@@ -22,7 +22,8 @@ var (
 	toEmail      string
 	fromEmail    string
 	subject      string
-	insecure     bool
+	hookout      bool
+  insecure     bool
 	stdin        *os.File
 
 	emailSubjectTemplate = "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}"
@@ -42,6 +43,7 @@ func main() {
 	cmd.Flags().Uint16VarP(&smtpPort, "smtpPort", "P", 587, "The SMTP server port")
 	cmd.Flags().StringVarP(&toEmail, "toEmail", "t", "", "The 'to' email address")
 	cmd.Flags().StringVarP(&fromEmail, "fromEmail", "f", "", "The 'from' email address")
+  cmd.Flags().BoolVarP(&hookout, "hookout", "H", false, "Include output from check hook(s)")
 	cmd.Flags().BoolVarP(&insecure, "insecure", "i", false, "Use an insecure connection (unauthenticated on port 25)")
 
 	cmd.Execute()
@@ -100,6 +102,9 @@ func checkArgs() error {
 		}
 	} else {
 		smtpPort = 25
+	}
+	if hookout {
+		emailBodyTemplate = "{{.Check.Output}}\n{{range .Check.Hooks}}Hook Name:  {{.Name}}\nHook Command:  {{.Command}}\n\n{{.Output}}\n\n{{end}}"
 	}
 	if len(fromEmail) == 0 {
 		return errors.New("from email is empty")
