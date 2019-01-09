@@ -151,9 +151,8 @@ func sendEmail(event *types.Event) error {
 		}
 
 		return nil
-	} else {
-		return smtp.SendMail(smtpAddress, smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost), fromEmail, []string{toEmail}, msg)
 	}
+	return smtp.SendMail(smtpAddress, smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost), fromEmail, []string{toEmail}, msg)
 
 }
 
