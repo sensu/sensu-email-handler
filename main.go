@@ -135,7 +135,9 @@ func sendEmail(event *types.Event) error {
 		defer smtpconn.Close()
 		smtpconn.Mail(fromEmail)
 		smtpconn.Rcpt(toEmail)
-		smtpdata, dataErr := smtpconn.Data()
+		if smtpdata, dataErr := smtpconn.Data(); dataErr != nil {
+		    return dataErr
+		}
 		if dataErr != nil {
 			return dataErr
 		}
