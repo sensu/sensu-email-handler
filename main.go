@@ -128,7 +128,9 @@ func sendEmail(event *types.Event) error {
 			"Subject: " + subject + "\r\n" +
 			"\r\n" +
 			body + "\r\n"
-		smtpconn, connErr := smtp.Dial(smtpAddress)
+		if smtpconn, connErr := smtp.Dial(smtpAddress); connErr != nil {
+		    return connErr
+		}
 		if connErr != nil {
 			return connErr
 		}
