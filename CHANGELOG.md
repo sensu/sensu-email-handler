@@ -7,6 +7,9 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+### Added
+- Added option to allow for including check hook output in the email body
+
 ## [0.0.2] - 2018-12-12
 
 ### Added

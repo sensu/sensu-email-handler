@@ -22,6 +22,7 @@ var (
 	toEmail      string
 	fromEmail    string
 	subject      string
+	hookout      bool
 	stdin        *os.File
 
 	emailSubjectTemplate = "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}"
@@ -41,6 +42,7 @@ func main() {
 	cmd.Flags().Uint16VarP(&smtpPort, "smtpPort", "P", 587, "The SMTP server port")
 	cmd.Flags().StringVarP(&toEmail, "toEmail", "t", "", "The 'to' email address")
 	cmd.Flags().StringVarP(&fromEmail, "fromEmail", "f", "", "The 'from' email address")
+	cmd.Flags().BoolVarP(&hookout, "hookout", "H", false, "Include output from check hook(s)")
 
 	cmd.Execute()
 }
@@ -97,6 +99,9 @@ func checkArgs() error {
 	}
 	if len(smtpPassword) == 0 {
 		return errors.New("smtp password is empty")
+	}
+	if hookout {
+		emailBodyTemplate = "{{.Check.Output}}\n{{range .Check.Hooks}}Hook Name:  {{.Name}}\nHook Command:  {{.Command}}\n\n{{.Output}}\n\n{{end}}"
 	}
 	if len(fromEmail) == 0 {
 		return errors.New("from email is empty")
