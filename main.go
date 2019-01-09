@@ -123,30 +123,26 @@ func sendEmail(event *types.Event) error {
 		return bodyErr
 	}
 
-	msg := "To: " + toEmail + "\r\n" +
+	msg := []byte("To: " + toEmail + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"\r\n" +
-		body + "\r\n"
+		body + "\r\n")
 
 	if insecure {
-		if smtpconn, connErr := smtp.Dial(smtpAddress); connErr != nil {
-			return connErr
-		}
+		smtpconn, connErr := smtp.Dial(smtpAddress)
 		if connErr != nil {
 			return connErr
 		}
 		defer smtpconn.Close()
 		smtpconn.Mail(fromEmail)
 		smtpconn.Rcpt(toEmail)
-		if smtpdata, dataErr := smtpconn.Data(); dataErr != nil {
-			return dataErr
-		}
+		smtpdata, dataErr := smtpconn.Data()
 		if dataErr != nil {
 			return dataErr
 		}
 		defer smtpdata.Close()
-		buf := bytes.NewBufferString(msg)
-		if _, dataErr = buf.WriteTo(smtpdata); dataErr != nil {
+		buf := bytes.NewBuffer(msg)
+		if _, dataErr := buf.WriteTo(smtpdata); dataErr != nil {
 			return dataErr
 		}
 
