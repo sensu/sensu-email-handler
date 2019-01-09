@@ -43,7 +43,7 @@ func main() {
 	cmd.Flags().Uint16VarP(&smtpPort, "smtpPort", "P", 587, "The SMTP server port")
 	cmd.Flags().StringVarP(&toEmail, "toEmail", "t", "", "The 'to' email address")
 	cmd.Flags().StringVarP(&fromEmail, "fromEmail", "f", "", "The 'from' email address")
-  cmd.Flags().BoolVarP(&hookout, "hookout", "H", false, "Include output from check hook(s)")
+	cmd.Flags().BoolVarP(&hookout, "hookout", "H", false, "Include output from check hook(s)")
 	cmd.Flags().BoolVarP(&insecure, "insecure", "i", false, "Use an insecure connection (unauthenticated on port 25)")
 
 	cmd.Execute()
