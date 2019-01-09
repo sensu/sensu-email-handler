@@ -123,13 +123,14 @@ func sendEmail(event *types.Event) error {
 		return bodyErr
 	}
 
+	msg := "To: " + toEmail + "\r\n" +
+		"Subject: " + subject + "\r\n" +
+		"\r\n" +
+		body + "\r\n"
+
 	if insecure {
-		msg := "To: " + toEmail + "\r\n" +
-			"Subject: " + subject + "\r\n" +
-			"\r\n" +
-			body + "\r\n"
 		if smtpconn, connErr := smtp.Dial(smtpAddress); connErr != nil {
-		    return connErr
+			return connErr
 		}
 		if connErr != nil {
 			return connErr
@@ -138,7 +139,7 @@ func sendEmail(event *types.Event) error {
 		smtpconn.Mail(fromEmail)
 		smtpconn.Rcpt(toEmail)
 		if smtpdata, dataErr := smtpconn.Data(); dataErr != nil {
-		    return dataErr
+			return dataErr
 		}
 		if dataErr != nil {
 			return dataErr
@@ -151,11 +152,6 @@ func sendEmail(event *types.Event) error {
 
 		return nil
 	} else {
-		msg := []byte("To: " + toEmail + "\r\n" +
-			"Subject: " + subject + "\r\n" +
-			"\r\n" +
-			body + "\r\n")
-
 		return smtp.SendMail(smtpAddress, smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost), fromEmail, []string{toEmail}, msg)
 	}
 
