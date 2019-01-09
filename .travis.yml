@@ -11,6 +11,7 @@ install:
 script:
 - gometalinter.v1 --vendor --disable-all --enable=vet --enable=ineffassign
   --enable=goconst --tests ./...
+- go test -v -race ./...
 
 before_script:
 - echo "REPO $TRAVIS_REPO_SLUG TAG ${TRAVIS_TAG}"
