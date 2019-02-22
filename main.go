@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"net/mail"
 	"net/smtp"
 	"os"
 	"text/template"
@@ -21,6 +22,7 @@ var (
 	smtpPort     uint16
 	toEmail      string
 	fromEmail    string
+	fromHeader   string
 	subject      string
 	hookout      bool
 	insecure     bool
@@ -109,6 +111,12 @@ func checkArgs() error {
 	if len(fromEmail) == 0 {
 		return errors.New("from email is empty")
 	}
+	fromAddr, addrErr := mail.ParseAddress(fromEmail)
+	if addrErr != nil {
+		return addrErr
+	}
+	fromEmail = fromAddr.Address
+	fromHeader = fromAddr.String()
 	return nil
 }
 
@@ -123,7 +131,8 @@ func sendEmail(event *types.Event) error {
 		return bodyErr
 	}
 
-	msg := []byte("To: " + toEmail + "\r\n" +
+	msg := []byte("From: " + fromHeader + "\r\n" +
+		"To: " + toEmail + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"\r\n" +
 		body + "\r\n")
