@@ -16,17 +16,18 @@ import (
 )
 
 var (
-	smtpHost     string
-	smtpUsername string
-	smtpPassword string
-	smtpPort     uint16
-	toEmail      string
-	fromEmail    string
-	fromHeader   string
-	subject      string
-	hookout      bool
-	insecure     bool
-	stdin        *os.File
+	smtpHost         string
+	smtpUsername     string
+	smtpPassword     string
+	smtpPort         uint16
+	toEmail          string
+	fromEmail        string
+	fromHeader       string
+	subject          string
+	hookout          bool
+	insecure         bool
+	bodyTemplateFile string
+	stdin            *os.File
 
 	emailSubjectTemplate = "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}"
 	emailBodyTemplate    = "{{.Check.Output}}"
@@ -47,6 +48,7 @@ func main() {
 	cmd.Flags().StringVarP(&fromEmail, "fromEmail", "f", "", "The 'from' email address")
 	cmd.Flags().BoolVarP(&hookout, "hookout", "H", false, "Include output from check hook(s)")
 	cmd.Flags().BoolVarP(&insecure, "insecure", "i", false, "Use an insecure connection (unauthenticated on port 25)")
+	cmd.Flags().StringVarP(&bodyTemplateFile, "bodyTemplateFile", "T", "", "A template file to use for the body")
 
 	cmd.Execute()
 }
@@ -105,8 +107,17 @@ func checkArgs() error {
 	} else {
 		smtpPort = 25
 	}
+	if hookout && len(bodyTemplateFile) > 0 {
+		return errors.New("--hookout (-H) and --bodyTemplateFile (-T) are mutually exclusive")
+	}
 	if hookout {
 		emailBodyTemplate = "{{.Check.Output}}\n{{range .Check.Hooks}}Hook Name:  {{.Name}}\nHook Command:  {{.Command}}\n\n{{.Output}}\n\n{{end}}"
+	} else if len(bodyTemplateFile) > 0 {
+		templateBytes, fileErr := ioutil.ReadFile(bodyTemplateFile)
+		if fileErr != nil {
+			return fmt.Errorf("failed to read specified template file %s", bodyTemplateFile)
+		}
+		emailBodyTemplate = string(templateBytes)
 	}
 	if len(fromEmail) == 0 {
 		return errors.New("from email is empty")

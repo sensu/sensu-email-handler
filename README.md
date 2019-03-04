@@ -50,6 +50,7 @@ Usage:
   sensu-email-handler [flags]
 
 Flags:
+  -T, --bodyTemplateFile string   A template file to use for the body
   -t, --toEmail string        The 'to' email address
   -f, --fromEmail string      The 'from' email address
   -h, --help                  help for sensu-email-handler
