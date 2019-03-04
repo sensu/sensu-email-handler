@@ -55,9 +55,9 @@ Flags:
   -f, --fromEmail string      The 'from' email address
   -h, --help                  help for sensu-email-handler
   -s, --smtpHost string       The SMTP host to use to send to send email
-  -p, --smtpPassword string   The SMTP password
+  -p, --smtpPassword string   The SMTP password, if not in env SMTP_PASSWORD
   -P, --smtpPort uint16       The SMTP server port (default 587)
-  -u, --smtpUsername string   The SMTP username
+  -u, --smtpUsername string   The SMTP username, if not in env SMTP_USERNAME
   -H, --hookout               Include output from check hook(s)
   -i, --insecure              Use an insecure connection (unauthenticated on port 25)
 ```

@@ -41,8 +41,8 @@ func main() {
 	}
 
 	cmd.Flags().StringVarP(&smtpHost, "smtpHost", "s", "", "The SMTP host to use to send to send email")
-	cmd.Flags().StringVarP(&smtpUsername, "smtpUsername", "u", "", "The SMTP username")
-	cmd.Flags().StringVarP(&smtpPassword, "smtpPassword", "p", "", "The SMTP password")
+	cmd.Flags().StringVarP(&smtpUsername, "smtpUsername", "u", os.Getenv("SMTP_USERNAME"), "The SMTP username, if not in env SMTP_USERNAME")
+	cmd.Flags().StringVarP(&smtpPassword, "smtpPassword", "p", os.Getenv("SMTP_PASSWORD"), "The SMTP password, if not in env SMTP_PASSWORD")
 	cmd.Flags().Uint16VarP(&smtpPort, "smtpPort", "P", 587, "The SMTP server port")
 	cmd.Flags().StringVarP(&toEmail, "toEmail", "t", "", "The 'to' email address")
 	cmd.Flags().StringVarP(&fromEmail, "fromEmail", "f", "", "The 'from' email address")
