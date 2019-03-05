@@ -109,7 +109,7 @@ Check:
   "api_version": "core/v2",
   "metadata": {
     "name": "linux-cpu-check",
-    "namespace": "AWS"
+    "namespace": "AWS",
     "annotations": {
       "sensu.io/plugins/email/config/body-template": "Check: {{ .Check.Name }}\nEntity: {{ .Entity.Name }}\n\nOutput: {{ .Check.Output }}\n\nSensu URL: https://sensu.example.com:3000/{{ .Check.Namespace }}/events/{{ .Entity.Name }}/{{ .Check.Name }}\n",
       "sensu.io/plugins/email/config/to": "ops@example.com"
