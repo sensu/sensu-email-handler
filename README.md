@@ -73,15 +73,13 @@ Simple:
 }
 ```
 Using Environment Variables and Annotations:
+
+Handler:
 ```json
 {
     "type": "Handler",
     "api_version": "core/v2",
     "metadata": {
-        "annotations": {
-            "sensu.io/plugins/email/config/body-template": "Check: {{ .Check.Name }}\nEntity: {{ .Entity.Name }}\n\nOutput: {{ .Check.Output }}\n\nSensu URL: https://sensu.example.com:3000/{{ .Check.Namespace }}/events/{{ .Entity.Name }}/{{ .Check.Name }}\n",
-            "sensu.io/plugins/email/config/to": "ops@example.com"
-        },
         "name": "mail",
         "namespace": "default"
     },
@@ -103,6 +101,53 @@ Using Environment Variables and Annotations:
         "type": "pipe"
     }
 }
+```
+Check:
+```json
+{
+  "type": "CheckConfig",
+  "api_version": "core/v2",
+  "metadata": {
+    "name": "linux-cpu-check",
+    "namespace": "AWS"
+    "annotations": {
+      "sensu.io/plugins/email/config/body-template": "Check: {{ .Check.Name }}\nEntity: {{ .Entity.Name }}\n\nOutput: {{ .Check.Output }}\n\nSensu URL: https://sensu.example.com:3000/{{ .Check.Namespace }}/events/{{ .Entity.Name }}/{{ .Check.Name }}\n",
+      "sensu.io/plugins/email/config/to": "ops@example.com"
+    },
+  },
+  "spec": {
+    "check_hooks": [
+      {
+        "non-zero": [
+          "linux-process-list-cpu-hook"
+        ]
+      }
+    ],
+    "command": "/opt/sensu-plugins-ruby/embedded/bin/check-cpu.rb -w {{ .labels.cpu_warning | default 90 }} -c {{ .labels.cpu_critical | default 95 }}",
+    "env_vars": null,
+    "handlers": [
+      "mail",
+      "flowdock"
+    ],
+    "high_flap_threshold": 0,
+    "interval": 60,
+    "low_flap_threshold": 0,
+    "output_metric_format": "",
+    "output_metric_handlers": null,
+    "proxy_entity_name": "",
+    "publish": true,
+    "round_robin": false,
+    "runtime_assets": null,
+    "stdin": false,
+    "subdue": null,
+    "subscriptions": [
+      "linux"
+    ],
+    "timeout": 0,
+    "ttl": 0
+  }
+}
+
 ```
 #### Template Defaults
 The defaults for the two available templates are:
