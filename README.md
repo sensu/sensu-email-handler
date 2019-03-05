@@ -14,11 +14,45 @@ From the local path of the sensu-email-handler repository:
 ```
 go build -o /usr/local/bin/sensu-email-handler main.go
 ```
+## Usage Examples
 
+### Help
+
+```
+The Sensu Go Email handler for sending an email notification
+
+Usage:
+  sensu-email-handler [flags]
+
+Flags:
+  -T, --bodyTemplateFile string   A template file to use for the body
+  -t, --toEmail string            The 'to' email address
+  -f, --fromEmail string          The 'from' email address
+  -h, --help                      help for sensu-email-handler
+  -s, --smtpHost string           The SMTP host to use to send to send email
+  -p, --smtpPassword string       The SMTP password, if not in env SMTP_PASSWORD
+  -P, --smtpPort uint16           The SMTP server port (default 587)
+  -u, --smtpUsername string       The SMTP username, if not in env SMTP_USERNAME
+  -H, --hookout                   Include output from check hook(s)
+  -i, --insecure                  Use an insecure connection (unauthenticated on port 25)
+```
 ## Configuration
 
-Example Sensu Go definition:
+### Environment Variables and Annotations
+|Environment Variable|Setting|Annotation|
+|--------------------|-------|----------|
+|SENSU_EMAIL_TO|-t / -- toEmail|sensu.io/plugins/email/config/to|
+|SENSU_EMAIL_FROM|-f / --fromEmail|sensu.io/plugins/email/config/from|
+|SENSU_EMAIL_SUBJECT_TEMPLATE|N/A|sensu.io/plugins/email/config/subject-template|
+|SENSU_EMAIL_BODY_TEMPLATE|N/A|sensu.io/plugins/email/config/body-template|
+|SENSU_EMAIL_SMTP_USERNAME|-u / --smtpUsername|N/A|
+|SENSU_EMAIL_SMTP_PASSWORD|-p / --smtpPassword|N/A|
 
+#### Precedence
+environment variable < command-line argument < annotation
+
+#### Definition Examples
+Simple:
 ```json
 {
     "api_version": "core/v2",
@@ -29,7 +63,7 @@ Example Sensu Go definition:
     },
     "spec": {
         "type": "pipe",
-        "command": "sensu-email-handler -f from@example.com -t to@example.com -s smtp.example.com -u user -p password",
+        "command": "sensu-email-handler -f from@example.com -t to@example.com -s smtp.example.com -u emailuser -p sup3rs3cr3t",
         "timeout": 10,
         "filters": [
             "is_incident",
@@ -38,28 +72,52 @@ Example Sensu Go definition:
     }
 }
 ```
-
-## Usage Examples
-
-Help:
-
+Using Environment Variables and Annotations:
+```json
+{
+    "type": "Handler",
+    "api_version": "core/v2",
+    "metadata": {
+        "annotations": {
+            "sensu.io/plugins/email/config/body-template": "Check: {{ .Check.Name }}\nEntity: {{ .Entity.Name }}\n\nOutput: {{ .Check.Output }}\n\nSensu URL: https://sensu.example.com:3000/{{ .Check.Namespace }}/events/{{ .Entity.Name }}/{{ .Check.Name }}\n",
+            "sensu.io/plugins/email/config/to": "ops@example.com"
+        },
+        "name": "mail",
+        "namespace": "default"
+    },
+    "spec": {
+        "command": "sensu-email-handler -f sensu@example.com -s smtp.example.com",
+        "env_vars": [
+            "SENSU_EMAIL_SMTP_USERNAME=emailuser",
+            "SENSU_EMAIL_SMTP_PASSWORD=sup3rs3cr3t"
+        ],
+        "filters": [
+            "is_incident",
+            "not_silenced"
+        ],
+        "handlers": null,
+        "runtime_assets": [
+            "sensu-email-handler"
+        ],
+        "timeout": 10,
+        "type": "pipe"
+    }
+}
 ```
-The Sensu Go Email handler for sending an email notification
+#### Template Defaults
+The defaults for the two available templates are:
 
-Usage:
-  sensu-email-handler [flags]
-
-Flags:
-  -T, --bodyTemplateFile string   A template file to use for the body
-  -t, --toEmail string        The 'to' email address
-  -f, --fromEmail string      The 'from' email address
-  -h, --help                  help for sensu-email-handler
-  -s, --smtpHost string       The SMTP host to use to send to send email
-  -p, --smtpPassword string   The SMTP password, if not in env SMTP_PASSWORD
-  -P, --smtpPort uint16       The SMTP server port (default 587)
-  -u, --smtpUsername string   The SMTP username, if not in env SMTP_USERNAME
-  -H, --hookout               Include output from check hook(s)
-  -i, --insecure              Use an insecure connection (unauthenticated on port 25)
+Subject:
+```
+Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}
+```
+Body:
+```
+{{.Check.Output}}
+```
+Body when including hook output:
+```
+{{.Check.Output}}\n{{range .Check.Hooks}}Hook Name:  {{.Name}}\nHook Command:  {{.Command}}\n\n{{.Output}}\n\n{{end}}
 ```
 
 ## Contributing
