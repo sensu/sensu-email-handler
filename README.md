@@ -52,7 +52,7 @@ Flags:
 environment variable < command-line argument < annotation
 
 #### Definition Examples
-Simple:
+Simple Handler:
 ```json
 {
     "api_version": "core/v2",
@@ -84,7 +84,7 @@ Handler:
         "namespace": "default"
     },
     "spec": {
-        "command": "sensu-email-handler -f sensu@example.com -s smtp.example.com",
+        "command": "sensu-email-handler -t to@example.com -f sensu@example.com -s smtp.example.com",
         "env_vars": [
             "SENSU_EMAIL_SMTP_USERNAME=emailuser",
             "SENSU_EMAIL_SMTP_PASSWORD=sup3rs3cr3t"
@@ -116,18 +116,10 @@ Check:
     },
   },
   "spec": {
-    "check_hooks": [
-      {
-        "non-zero": [
-          "linux-process-list-cpu-hook"
-        ]
-      }
-    ],
     "command": "/opt/sensu-plugins-ruby/embedded/bin/check-cpu.rb -w {{ .labels.cpu_warning | default 90 }} -c {{ .labels.cpu_critical | default 95 }}",
     "env_vars": null,
     "handlers": [
-      "mail",
-      "flowdock"
+      "mail"
     ],
     "high_flap_threshold": 0,
     "interval": 60,
