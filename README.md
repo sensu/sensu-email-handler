@@ -35,6 +35,7 @@ Flags:
   -u, --smtpUsername string       The SMTP username, if not in env SMTP_USERNAME
   -H, --hookout                   Include output from check hook(s)
   -i, --insecure                  Use an insecure connection (unauthenticated on port 25)
+  -l, --loginauth                 Use "login auth" mechanism
 ```
 ## Configuration
 
