@@ -12,7 +12,7 @@ or create an executable script from this source.
 From the local path of the sensu-email-handler repository:
 
 ```
-go build -o /usr/local/bin/sensu-email-handler main.go
+go build -o /usr/local/bin/sensu-email-handler
 ```
 ## Usage Examples
 
