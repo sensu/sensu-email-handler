@@ -10,6 +10,7 @@ import (
 	"net/smtp"
 	"os"
 	"path"
+	"strings"
 	"text/template"
 
 	"github.com/sensu/sensu-go/types"
@@ -169,6 +170,7 @@ func parseFrom() error {
 }
 
 func sendEmail(event *types.Event) error {
+	var contentType string
 	smtpAddress := fmt.Sprintf("%s:%d", smtpHost, smtpPort)
 	subject, subjectErr := resolveTemplate(config.EmailSubjectTemplate.Value, event)
 	if subjectErr != nil {
@@ -178,10 +180,16 @@ func sendEmail(event *types.Event) error {
 	if bodyErr != nil {
 		return bodyErr
 	}
+	if strings.Contains(body, "<html>") {
+		contentType = "text/html"
+	} else {
+		contentType = "text/plain"
+	}
 
 	msg := []byte("From: " + fromHeader + "\r\n" +
 		"To: " + config.ToEmail.Value + "\r\n" +
 		"Subject: " + subject + "\r\n" +
+		"Content-Type: " + contentType + "\r\n" +
 		"\r\n" +
 		body + "\r\n")
 
