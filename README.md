@@ -48,6 +48,15 @@ Flags:
 |SENSU_EMAIL_SMTP_USERNAME|-u / --smtpUsername|N/A|
 |SENSU_EMAIL_SMTP_PASSWORD|-p / --smtpPassword|N/A|
 
+**Note:**  When using template expansion for annotations in **checks**, the token delimiters ``{{`` and ``}}`` have to be escaped with ``{{` `` and `` `}}``, respectively.  Yes, this is ugly, but it is because checks are ran through token expansion before being ran.  This is not needed for annotations in entities.
+
+Example:
+```
+"sensu.io/plugins/email/config/body-template": "Check: {{`{{ .Check.Name }}`}}\nEntity: {{`{{ .Entity.Name }}`}}\n\nOutput: {{`{{ .Check.Output }}`}}\n\nSensu URL: https://sensu.example.com:3000/{{`{{ .Check.Namespace }}`}}/events/{{`{{ .Entity.Name }}`}}/{{`{{ .Check.Name }}`}}\n",
+
+```
+
+
 #### Precedence
 environment variable < command-line argument < annotation
 
@@ -111,7 +120,7 @@ Check:
     "name": "linux-cpu-check",
     "namespace": "AWS",
     "annotations": {
-      "sensu.io/plugins/email/config/body-template": "Check: {{ .Check.Name }}\nEntity: {{ .Entity.Name }}\n\nOutput: {{ .Check.Output }}\n\nSensu URL: https://sensu.example.com:3000/{{ .Check.Namespace }}/events/{{ .Entity.Name }}/{{ .Check.Name }}\n",
+      "sensu.io/plugins/email/config/body-template": "Check: {{`{{ .Check.Name }}`}}\nEntity: {{`{{ .Entity.Name }}`}}\n\nOutput: {{`{{ .Check.Output }}`}}\n\nSensu URL: https://sensu.example.com:3000/{{`{{ .Check.Namespace }}`}}/events/{{`{{ .Entity.Name }}`}}/{{`{{ .Check.Name }}`}}\n",
       "sensu.io/plugins/email/config/to": "ops@example.com"
     },
   },
