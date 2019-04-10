@@ -13,6 +13,7 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ### Added
 - Added support for annotations for certain variables
+- Added simple detection of content type and added header for it
 
 ## [0.1.0] - 2019-03-04
 
