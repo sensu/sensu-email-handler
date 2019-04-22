@@ -40,7 +40,7 @@ var (
 	subject          string
 	hookout          bool
 	insecure         bool
-        loginauth        bool
+	loginauth        bool
 	bodyTemplateFile string
 	stdin            *os.File
 
@@ -135,9 +135,9 @@ func checkArgs() error {
 	if len(smtpHost) == 0 {
 		return fmt.Errorf("missing smtp host")
 	}
-        if insecure && loginauth {
-            return fmt.Errorf("--insecure (-i) and --loginauth (-l) flags are mutually exclusive")
-        }
+	if insecure && loginauth {
+		return fmt.Errorf("--insecure (-i) and --loginauth (-l) flags are mutually exclusive")
+	}
 	if !insecure {
 		if len(smtpUsername) == 0 {
 			return fmt.Errorf("smtp username is empty")
@@ -218,8 +218,8 @@ func sendEmail(event *types.Event) error {
 
 		return nil
 	} else if loginauth {
-	    return smtp.SendMail(smtpAddress, LoginAuth(smtpUsername, smtpPassword), config.FromEmail.Value, []string{config.ToEmail.Value}, msg)
-        }
+		return smtp.SendMail(smtpAddress, LoginAuth(smtpUsername, smtpPassword), config.FromEmail.Value, []string{config.ToEmail.Value}, msg)
+	}
 	return smtp.SendMail(smtpAddress, smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost), config.FromEmail.Value, []string{config.ToEmail.Value}, msg)
 
 }
