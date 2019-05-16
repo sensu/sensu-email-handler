@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/mail"
 	"net/smtp"
-	"os"
 	"text/template"
 
 	"github.com/sensu/sensu-plugins-go-library/sensu"
@@ -26,7 +25,6 @@ var (
 	hookout          bool
 	insecure         bool
 	bodyTemplateFile string
-	stdin            *os.File
 
 	emailSubjectTemplate = "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}"
 	emailBodyTemplate    = "{{.Check.Output}}"
