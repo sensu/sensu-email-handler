@@ -94,7 +94,7 @@
   revision = "2315d5715e36303a941d907f038da7f7c44c773b"
 
 [[projects]]
-  digest = "1:b9cc662e15cbe325399cb8a8610962a4b8373512c2f3318d0b30e856ca081c64"
+  digest = "1:be364f871284e2e8f787235fe31d904cf9958f64b7b06fd52f97bf9af2672f91"
   name = "github.com/sensu/sensu-go"
   packages = [
     "api/core/v2",
@@ -103,7 +103,19 @@
     "util/strings",
   ]
   pruneopts = "UT"
-  revision = "0150bbcb0a2b70f720fa20a9a47c7e91bacd72b1"
+  revision = "32aea478ae74c3753710887d2ce2556b598d82bb"
+  version = "5.7.0"
+
+[[projects]]
+  digest = "1:887b1d559ae6493b3873336a87df2ea0cfe18835706987bec6c7fea3df6002f2"
+  name = "github.com/sensu/sensu-plugins-go-library"
+  packages = [
+    "args",
+    "sensu",
+  ]
+  pruneopts = "UT"
+  revision = "a614f92aa018bd69a21d8d6e2d07244b8d8fbb05"
+  version = "0.2.0-alpha4"
 
 [[projects]]
   digest = "1:645cabccbb4fa8aab25a956cbcbdf6a6845ca736b2c64e197ca7cbb9d210b939"
@@ -227,7 +239,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/sensu/sensu-go/types",
-    "github.com/spf13/cobra",
+    "github.com/sensu/sensu-plugins-go-library/sensu",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
