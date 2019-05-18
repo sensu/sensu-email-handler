@@ -17,7 +17,7 @@ var (
 	smtpHost         string
 	smtpUsername     string
 	smtpPassword     string
-	smtpPort         uint16
+	smtpPort         uint64
 	toEmail          string
 	fromEmail        string
 	fromHeader       string
@@ -25,6 +25,8 @@ var (
 	hookout          bool
 	insecure         bool
 	bodyTemplateFile string
+
+	defaultSmtpPort = 587
 
 	emailSubjectTemplate = "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}"
 	emailBodyTemplate    = "{{.Check.Output}}"
@@ -65,7 +67,7 @@ var (
 			Path:      "smtpPort",
 			Argument:  "smtpPort",
 			Shorthand: "P",
-			Default:   587,
+			Default:   uint64(defaultSmtpPort),
 			Usage:     "The SMTP server port",
 			Value:     &smtpPort,
 		},
