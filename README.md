@@ -59,7 +59,9 @@ Example:
 
 
 #### Precedence
-environment variable < command-line argument < annotation
+1. annotation
+2. command-line argument
+3. environment variable
 
 #### Definition Examples
 Simple Handler:
