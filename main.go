@@ -40,6 +40,7 @@ var (
 	subject          string
 	hookout          bool
 	insecure         bool
+	loginauth        bool
 	bodyTemplateFile string
 	stdin            *os.File
 
@@ -73,6 +74,7 @@ func main() {
 	cmd.Flags().StringVarP(&config.FromEmail.Value, "fromEmail", "f", os.Getenv(config.FromEmail.Env), "The 'from' email address, if not in env "+config.FromEmail.Env)
 	cmd.Flags().BoolVarP(&hookout, "hookout", "H", false, "Include output from check hook(s)")
 	cmd.Flags().BoolVarP(&insecure, "insecure", "i", false, "Use an insecure connection (unauthenticated on port 25)")
+	cmd.Flags().BoolVarP(&loginauth, "loginauth", "l", false, "Use \"login auth\" mechanism")
 	cmd.Flags().StringVarP(&bodyTemplateFile, "bodyTemplateFile", "T", "", "A template file to use for the body")
 
 	cmd.Execute()
@@ -132,6 +134,9 @@ func run(cmd *cobra.Command, args []string) error {
 func checkArgs() error {
 	if len(smtpHost) == 0 {
 		return fmt.Errorf("missing smtp host")
+	}
+	if insecure && loginauth {
+		return fmt.Errorf("--insecure (-i) and --loginauth (-l) flags are mutually exclusive")
 	}
 	if !insecure {
 		if len(smtpUsername) == 0 {
@@ -212,6 +217,8 @@ func sendEmail(event *types.Event) error {
 		}
 
 		return nil
+	} else if loginauth {
+		return smtp.SendMail(smtpAddress, LoginAuth(smtpUsername, smtpPassword), config.FromEmail.Value, []string{config.ToEmail.Value}, msg)
 	}
 	return smtp.SendMail(smtpAddress, smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost), config.FromEmail.Value, []string{config.ToEmail.Value}, msg)
 

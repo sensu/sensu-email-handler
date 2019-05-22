@@ -12,7 +12,7 @@ or create an executable script from this source.
 From the local path of the sensu-email-handler repository:
 
 ```
-go build -o /usr/local/bin/sensu-email-handler main.go
+go build -o /usr/local/bin/sensu-email-handler
 ```
 ## Usage Examples
 
@@ -35,6 +35,7 @@ Flags:
   -u, --smtpUsername string       The SMTP username, if not in env SMTP_USERNAME
   -H, --hookout                   Include output from check hook(s)
   -i, --insecure                  Use an insecure connection (unauthenticated on port 25)
+  -l, --loginauth                 Use "login auth" mechanism
 ```
 ## Configuration
 
@@ -58,7 +59,9 @@ Example:
 
 
 #### Precedence
-environment variable < command-line argument < annotation
+1. annotation
+2. command-line argument
+3. environment variable
 
 #### Definition Examples
 Simple Handler:
