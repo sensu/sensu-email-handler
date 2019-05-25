@@ -4,176 +4,180 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/sensu/sensu-go/types"
 	"io/ioutil"
 	"net/mail"
 	"net/smtp"
 	"text/template"
 
+	corev2 "github.com/sensu/sensu-go/api/core/v2"
 	"github.com/sensu/sensu-plugins-go-library/sensu"
 )
 
-var (
-	smtpHost         string
-	smtpUsername     string
-	smtpPassword     string
-	smtpPort         uint64
-	toEmail          string
-	fromEmail        string
-	fromHeader       string
-	subject          string
-	hookout          bool
-	insecure         bool
-	bodyTemplateFile string
+type HandlerConfig struct {
+	sensu.PluginConfig
+	SmtpHost         string
+	SmtpUsername     string
+	SmtpPassword     string
+	SmtpPort         uint64
+	ToEmail          string
+	FromEmail        string
+	FromHeader       string
+	Subject          string
+	Hookout          bool
+	Insecure         bool
+	BodyTemplateFile string
+}
 
-	defaultSmtpPort = 587
+const (
+	smtpHost         = "smtpHost"
+	smtpUsername     = "smtpUsername"
+	smtpPassword     = "smtpPassword"
+	smtpPort         = "smtpPort"
+	toEmail          = "toEmail"
+	fromEmail        = "fromEmail"
+	insecure         = "insecure"
+	hookout          = "hookout"
+	bodyTemplateFile = "bodyTemplateFile"
+	defaultSmtpPort  = 587
+)
+
+var (
+	config = HandlerConfig{
+		PluginConfig: sensu.PluginConfig{
+			Name:  "sensu-email-handler",
+			Short: "The Sensu Go Email handler for sending an email notification",
+		},
+	}
 
 	emailSubjectTemplate = "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}"
 	emailBodyTemplate    = "{{.Check.Output}}"
 
-	emailPluginConfig = sensu.PluginConfig{
-		Name:  "sensu-email-handler",
-		Short: "The Sensu Go Email handler for sending an email notification",
-	}
-
 	emailConfigOptions = []*sensu.PluginConfigOption{
 		{
-			Path:      "smtpHost",
-			Argument:  "smtpHost",
+			Path:      smtpHost,
+			Argument:  smtpHost,
 			Shorthand: "s",
 			Default:   "",
 			Usage:     "The SMTP host to use to send to send email",
-			Value:     &smtpHost,
+			Value:     &config.SmtpHost,
 		},
 		{
-			Path:      "smtpUsername",
+			Path:      smtpUsername,
 			Env:       "SMTP_USERNAME",
-			Argument:  "smtpUsername",
+			Argument:  smtpUsername,
 			Shorthand: "u",
 			Default:   "",
 			Usage:     "The SMTP username, if not in env SMTP_USERNAME",
-			Value:     &smtpUsername,
+			Value:     &config.SmtpUsername,
 		},
 		{
-			Path:      "smtpPassword",
+			Path:      smtpPassword,
 			Env:       "SMTP_PASSWORD",
-			Argument:  "smtpPassword",
+			Argument:  smtpPassword,
 			Shorthand: "p",
 			Default:   "",
 			Usage:     "The SMTP password, if not in env SMTP_PASSWORD",
-			Value:     &smtpPassword,
+			Value:     &config.SmtpPassword,
 		},
 		{
-			Path:      "smtpPort",
-			Argument:  "smtpPort",
+			Path:      smtpPort,
+			Argument:  smtpPort,
 			Shorthand: "P",
 			Default:   uint64(defaultSmtpPort),
 			Usage:     "The SMTP server port",
-			Value:     &smtpPort,
+			Value:     &config.SmtpPort,
 		},
 		{
-			Path:      "toEmail",
-			Argument:  "toEmail",
+			Path:      toEmail,
+			Argument:  toEmail,
 			Shorthand: "t",
 			Default:   "",
 			Usage:     "The 'to' email address",
-			Value:     &toEmail,
+			Value:     &config.ToEmail,
 		},
 		{
-			Path:      "fromEmail",
-			Argument:  "fromEmail",
+			Path:      fromEmail,
+			Argument:  fromEmail,
 			Shorthand: "f",
 			Default:   "",
 			Usage:     "The 'from' email address",
-			Value:     &fromEmail,
+			Value:     &config.FromEmail,
 		},
 		{
-			Path:      "insecure",
-			Argument:  "insecure",
+			Path:      insecure,
+			Argument:  insecure,
 			Shorthand: "i",
 			Default:   false,
 			Usage:     "Use an insecure connection (unauthenticated on port 25)",
-			Value:     &insecure,
+			Value:     &config.Insecure,
 		},
 		{
-			Path:      "hookout",
-			Argument:  "hookout",
+			Path:      hookout,
+			Argument:  hookout,
 			Shorthand: "H",
 			Default:   false,
 			Usage:     "Include output from check hook(s)",
-			Value:     &hookout,
+			Value:     &config.Hookout,
 		},
 		{
-			Path:      "bodyTemplateFile",
-			Argument:  "bodyTemplateFile",
+			Path:      bodyTemplateFile,
+			Argument:  bodyTemplateFile,
 			Shorthand: "T",
 			Default:   "",
 			Usage:     "A template file to use for the body",
-			Value:     &bodyTemplateFile,
+			Value:     &config.BodyTemplateFile,
 		},
 	}
 )
 
 func main() {
-	goHandler, _ := sensu.NewGoHandler(&emailPluginConfig, emailConfigOptions, checkArgs, executeHandler)
-	err := goHandler.Execute()
-	if err != nil {
-		fmt.Printf("Error executing plugin: %s", err)
-	}
+	goHandler := sensu.NewGoHandler(&config.PluginConfig, emailConfigOptions, checkArgs, sendEmail)
+	goHandler.Execute()
 }
 
-func checkArgs(_ *types.Event) error {
-	if len(smtpHost) == 0 {
+func checkArgs(_ *corev2.Event) error {
+	if len(config.SmtpHost) == 0 {
 		return errors.New("missing smtp host")
 	}
-	if len(toEmail) == 0 {
+	if len(config.ToEmail) == 0 {
 		return errors.New("missing destination email address")
 	}
-	if !insecure {
-		if len(smtpUsername) == 0 {
+	if !config.Insecure {
+		if len(config.SmtpUsername) == 0 {
 			return errors.New("smtp username is empty")
 		}
-		if len(smtpPassword) == 0 {
+		if len(config.SmtpPassword) == 0 {
 			return errors.New("smtp password is empty")
 		}
 	} else {
-		smtpPort = 25
+		config.SmtpPort = 25
 	}
-	if hookout && len(bodyTemplateFile) > 0 {
+	if config.Hookout && len(config.BodyTemplateFile) > 0 {
 		return errors.New("--hookout (-H) and --bodyTemplateFile (-T) are mutually exclusive")
 	}
-	if hookout {
+	if config.Hookout {
 		emailBodyTemplate = "{{.Check.Output}}\n{{range .Check.Hooks}}Hook Name:  {{.Name}}\nHook Command:  {{.Command}}\n\n{{.Output}}\n\n{{end}}"
-	} else if len(bodyTemplateFile) > 0 {
-		templateBytes, fileErr := ioutil.ReadFile(bodyTemplateFile)
+	} else if len(config.BodyTemplateFile) > 0 {
+		templateBytes, fileErr := ioutil.ReadFile(config.BodyTemplateFile)
 		if fileErr != nil {
-			return fmt.Errorf("failed to read specified template file %s", bodyTemplateFile)
+			return fmt.Errorf("failed to read specified template file %s", config.BodyTemplateFile)
 		}
 		emailBodyTemplate = string(templateBytes)
 	}
-	if len(fromEmail) == 0 {
+	if len(config.FromEmail) == 0 {
 		return errors.New("from email is empty")
 	}
-	fromAddr, addrErr := mail.ParseAddress(fromEmail)
+	fromAddr, addrErr := mail.ParseAddress(config.FromEmail)
 	if addrErr != nil {
 		return addrErr
 	}
-	fromEmail = fromAddr.Address
-	fromHeader = fromAddr.String()
+	config.FromEmail = fromAddr.Address
+	config.FromHeader = fromAddr.String()
 	return nil
 }
 
-func executeHandler(event *types.Event) error {
-	sendMailError := sendEmail(event)
-	if sendMailError != nil {
-		return fmt.Errorf("failed to send email: %s", sendMailError)
-	}
-
-	return nil
-}
-
-func sendEmail(event *types.Event) error {
-	smtpAddress := fmt.Sprintf("%s:%d", smtpHost, smtpPort)
+func sendEmail(event *corev2.Event) error {
+	smtpAddress := fmt.Sprintf("%s:%d", config.SmtpHost, config.SmtpPort)
 	subject, subjectErr := resolveTemplate(emailSubjectTemplate, event)
 	if subjectErr != nil {
 		return subjectErr
@@ -183,20 +187,20 @@ func sendEmail(event *types.Event) error {
 		return bodyErr
 	}
 
-	msg := []byte("From: " + fromHeader + "\r\n" +
-		"To: " + toEmail + "\r\n" +
+	msg := []byte("From: " + config.FromHeader + "\r\n" +
+		"To: " + config.ToEmail + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"\r\n" +
 		body + "\r\n")
 
-	if insecure {
+	if config.Insecure {
 		smtpconn, connErr := smtp.Dial(smtpAddress)
 		if connErr != nil {
 			return connErr
 		}
 		defer smtpconn.Close()
-		smtpconn.Mail(fromEmail)
-		smtpconn.Rcpt(toEmail)
+		smtpconn.Mail(config.FromEmail)
+		smtpconn.Rcpt(config.ToEmail)
 		smtpdata, dataErr := smtpconn.Data()
 		if dataErr != nil {
 			return dataErr
@@ -209,11 +213,11 @@ func sendEmail(event *types.Event) error {
 
 		return nil
 	}
-	return smtp.SendMail(smtpAddress, smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost), fromEmail, []string{toEmail}, msg)
+	return smtp.SendMail(smtpAddress, smtp.PlainAuth("", config.SmtpUsername, config.SmtpPassword, config.SmtpHost), config.FromEmail, []string{config.ToEmail}, msg)
 
 }
 
-func resolveTemplate(templateValue string, event *types.Event) (string, error) {
+func resolveTemplate(templateValue string, event *corev2.Event) (string, error) {
 	var resolved bytes.Buffer
 	tmpl, err := template.New("test").Parse(templateValue)
 	if err != nil {

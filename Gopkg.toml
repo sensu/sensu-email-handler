@@ -31,4 +31,4 @@
 
 [[constraint]]
   name = "github.com/sensu/sensu-plugins-go-library"
-  version = "0.2.0-alpha4"
+  version = "0.2.0"

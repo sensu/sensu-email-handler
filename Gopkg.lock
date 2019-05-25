@@ -107,15 +107,15 @@
   version = "5.7.0"
 
 [[projects]]
-  digest = "1:887b1d559ae6493b3873336a87df2ea0cfe18835706987bec6c7fea3df6002f2"
+  digest = "1:8cd72fbcf8f18cf753ca9c40723eaef3356e166437f33d219d977581b7024d14"
   name = "github.com/sensu/sensu-plugins-go-library"
   packages = [
     "args",
     "sensu",
   ]
   pruneopts = "UT"
-  revision = "a614f92aa018bd69a21d8d6e2d07244b8d8fbb05"
-  version = "0.2.0-alpha4"
+  revision = "a4d9fcd58e069a1c9e51984b9f4b466accd366c8"
+  version = "0.2.0"
 
 [[projects]]
   digest = "1:645cabccbb4fa8aab25a956cbcbdf6a6845ca736b2c64e197ca7cbb9d210b939"
