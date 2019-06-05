@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/mail"
 	"net/smtp"
 	"text/template"
@@ -151,6 +152,9 @@ func checkArgs(_ *corev2.Event) error {
 		}
 	} else {
 		config.SmtpPort = 25
+	}
+	if config.SmtpPort > math.MaxUint16 {
+		return errors.New("smtp port is out of range")
 	}
 	if config.Hookout && len(config.BodyTemplateFile) > 0 {
 		return errors.New("--hookout (-H) and --bodyTemplateFile (-T) are mutually exclusive")
