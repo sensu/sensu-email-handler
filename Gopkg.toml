@@ -30,5 +30,9 @@
   unused-packages = true
 
 [[constraint]]
+  name = "github.com/sensu/sensu-go"
+  version = "5.9.0"
+
+[[constraint]]
   name = "github.com/sensu/sensu-plugins-go-library"
   version = "0.2.0"
