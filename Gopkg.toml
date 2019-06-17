@@ -30,9 +30,9 @@
   unused-packages = true
 
 [[constraint]]
-  name = "github.com/spf13/cobra"
-  version = "0.0.3"
+  name = "github.com/sensu/sensu-go"
+  version = "5.9.0"
 
 [[constraint]]
-  name = "github.com/sensu/sensu-go"
-  revision = "0150bbcb0a2b70f720fa20a9a47c7e91bacd72b1"
+  name = "github.com/sensu/sensu-plugins-go-library"
+  version = "0.2.0"
