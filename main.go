@@ -52,8 +52,9 @@ const (
 var (
 	config = HandlerConfig{
 		PluginConfig: sensu.PluginConfig{
-			Name:  "sensu-email-handler",
-			Short: "The Sensu Go Email handler for sending an email notification",
+			Name:     "sensu-email-handler",
+			Short:    "The Sensu Go Email handler for sending an email notification",
+			Keyspace: "sensu.io/plugins/email/config",
 		},
 	}
 
