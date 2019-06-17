@@ -9,6 +9,7 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ### Added
 - Added loginauth auth mechanism
+- Added Content-Type to support HTML emails
 
 ## [0.1.0] - 2019-03-04
 

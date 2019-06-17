@@ -8,6 +8,7 @@ import (
 	"math"
 	"net/mail"
 	"net/smtp"
+	"strings"
 	"text/template"
 
 	corev2 "github.com/sensu/sensu-go/api/core/v2"
@@ -198,6 +199,8 @@ func checkArgs(_ *corev2.Event) error {
 }
 
 func sendEmail(event *corev2.Event) error {
+	var contentType string
+
 	smtpAddress := fmt.Sprintf("%s:%d", config.SmtpHost, config.SmtpPort)
 	subject, subjectErr := resolveTemplate(emailSubjectTemplate, event)
 	if subjectErr != nil {
@@ -208,9 +211,16 @@ func sendEmail(event *corev2.Event) error {
 		return bodyErr
 	}
 
+	if strings.Contains(body, "<html>") {
+		contentType = "text/html"
+	} else {
+		contentType = "text/plain"
+	}
+
 	msg := []byte("From: " + config.FromHeader + "\r\n" +
 		"To: " + config.ToEmail + "\r\n" +
 		"Subject: " + subject + "\r\n" +
+		"Content-Type: " + contentType + "\r\n" +
 		"\r\n" +
 		body + "\r\n")
 
