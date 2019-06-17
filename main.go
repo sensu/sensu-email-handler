@@ -26,7 +26,12 @@ type HandlerConfig struct {
 	Subject          string
 	Hookout          bool
 	Insecure         bool
+	LoginAuth        bool
 	BodyTemplateFile string
+}
+
+type loginAuth struct {
+	username, password string
 }
 
 const (
@@ -38,6 +43,7 @@ const (
 	fromEmail        = "fromEmail"
 	insecure         = "insecure"
 	hookout          = "hookout"
+	loginauth        = "loginauth"
 	bodyTemplateFile = "bodyTemplateFile"
 	defaultSmtpPort  = 587
 )
@@ -121,6 +127,14 @@ var (
 			Value:     &config.Hookout,
 		},
 		{
+			Path:      loginauth,
+			Argument:  loginauth,
+			Shorthand: "l",
+			Default:   false,
+			Usage:     "Use \"login auth\" mechanisim",
+			Value:     &config.LoginAuth,
+		},
+		{
 			Path:      bodyTemplateFile,
 			Argument:  bodyTemplateFile,
 			Shorthand: "T",
@@ -142,6 +156,9 @@ func checkArgs(_ *corev2.Event) error {
 	}
 	if len(config.ToEmail) == 0 {
 		return errors.New("missing destination email address")
+	}
+	if config.Insecure && config.LoginAuth {
+		return fmt.Errorf("--insecure (-i) and --loginauth (-l) flags are mutually exclusive")
 	}
 	if !config.Insecure {
 		if len(config.SmtpUsername) == 0 {
@@ -216,6 +233,8 @@ func sendEmail(event *corev2.Event) error {
 		}
 
 		return nil
+	} else if config.LoginAuth {
+		return smtp.SendMail(smtpAddress, LoginAuth(config.SmtpUsername, config.SmtpPassword), config.FromEmail, []string{config.ToEmail}, msg)
 	}
 	return smtp.SendMail(smtpAddress, smtp.PlainAuth("", config.SmtpUsername, config.SmtpPassword, config.SmtpHost), config.FromEmail, []string{config.ToEmail}, msg)
 
@@ -233,4 +252,31 @@ func resolveTemplate(templateValue string, event *corev2.Event) (string, error) 
 	}
 
 	return resolved.String(), nil
+}
+
+// https://gist.github.com/homme/22b457eb054a07e7b2fb
+// https://gist.github.com/andelf/5118732
+
+// MIT license (c) andelf 2013
+
+func LoginAuth(username, password string) smtp.Auth {
+	return &loginAuth{username, password}
+}
+
+func (a *loginAuth) Start(server *smtp.ServerInfo) (string, []byte, error) {
+	return "LOGIN", []byte(a.username), nil
+}
+
+func (a *loginAuth) Next(fromServer []byte, more bool) ([]byte, error) {
+	if more {
+		switch string(fromServer) {
+		case "Username:":
+			return []byte(a.username), nil
+		case "Password:":
+			return []byte(a.password), nil
+		default:
+			return nil, errors.New("Unkown fromServer")
+		}
+	}
+	return nil, nil
 }

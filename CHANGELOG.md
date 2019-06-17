@@ -7,6 +7,9 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- Added loginauth auth mechanism
+
 ## [0.1.0] - 2019-03-04
 
 ### Changed
