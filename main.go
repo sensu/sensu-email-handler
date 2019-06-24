@@ -24,11 +24,11 @@ type HandlerConfig struct {
 	ToEmail          string
 	FromEmail        string
 	FromHeader       string
-	Subject          string
 	Hookout          bool
 	Insecure         bool
 	LoginAuth        bool
 	BodyTemplateFile string
+	SubjectTemplate  string
 }
 
 type loginAuth struct {
@@ -46,6 +46,7 @@ const (
 	hookout          = "hookout"
 	loginauth        = "loginauth"
 	bodyTemplateFile = "bodyTemplateFile"
+	subjectTemplate  = "subjectTemplate"
 	defaultSmtpPort  = 587
 )
 
@@ -58,8 +59,7 @@ var (
 		},
 	}
 
-	emailSubjectTemplate = "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}"
-	emailBodyTemplate    = "{{.Check.Output}}"
+	emailBodyTemplate = "{{.Check.Output}}"
 
 	emailConfigOptions = []*sensu.PluginConfigOption{
 		{
@@ -144,6 +144,14 @@ var (
 			Usage:     "A template file to use for the body",
 			Value:     &config.BodyTemplateFile,
 		},
+		{
+			Path:      subjectTemplate,
+			Argument:  subjectTemplate,
+			Shorthand: "S",
+			Default:   "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}",
+			Usage:     "A template to use for the subject",
+			Value:     &config.SubjectTemplate,
+		},
 	}
 )
 
@@ -203,7 +211,7 @@ func sendEmail(event *corev2.Event) error {
 	var contentType string
 
 	smtpAddress := fmt.Sprintf("%s:%d", config.SmtpHost, config.SmtpPort)
-	subject, subjectErr := resolveTemplate(emailSubjectTemplate, event)
+	subject, subjectErr := resolveTemplate(config.SubjectTemplate, event)
 	if subjectErr != nil {
 		return subjectErr
 	}

@@ -14,6 +14,7 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 - Added loginauth auth mechanism
 - Added Content-Type to support HTML emails
 - Added plugin Keyspace so as to support configuraion overrides with annotations
+- Added subject templating via argument/annotation
 
 ## [0.1.0] - 2019-03-04
 
