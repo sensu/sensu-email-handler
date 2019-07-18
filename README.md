@@ -60,7 +60,7 @@ Flags:
   -u, --smtpUsername string       The SMTP username, if not in env SMTP_USERNAME
   -H, --hookout                   Include output from check hook(s)
   -i, --insecure                  Use an insecure connection (unauthenticated on port 25)
-  -l, --useLoginAuth              Use "login auth" mechanism
+  -l, --enableLoginAuth           Use "login auth" mechanism
   -S, --subjectTemplate string    A template to use for the subject (default "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}")
 ```
 

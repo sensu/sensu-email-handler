@@ -44,7 +44,7 @@ const (
 	fromEmail        = "fromEmail"
 	insecure         = "insecure"
 	hookout          = "hookout"
-	useLoginAuth     = "useLoginAuth"
+	enableLoginAuth  = "enableLoginAuth"
 	bodyTemplateFile = "bodyTemplateFile"
 	subjectTemplate  = "subjectTemplate"
 	defaultSmtpPort  = 587
@@ -129,8 +129,8 @@ var (
 			Value:     &config.Hookout,
 		},
 		{
-			Path:      useLoginAuth,
-			Argument:  useLoginAuth,
+			Path:      enableLoginAuth,
+			Argument:  enableLoginAuth,
 			Shorthand: "l",
 			Default:   false,
 			Usage:     "Use \"login auth\" mechanisim",
@@ -168,7 +168,7 @@ func checkArgs(_ *corev2.Event) error {
 		return errors.New("missing destination email address")
 	}
 	if config.Insecure && config.LoginAuth {
-		return fmt.Errorf("--insecure (-i) and --loginauth (-l) flags are mutually exclusive")
+		return fmt.Errorf("--insecure (-i) and --enableLoginAuth (-l) flags are mutually exclusive")
 	}
 	if !config.Insecure {
 		if len(config.SmtpUsername) == 0 {
