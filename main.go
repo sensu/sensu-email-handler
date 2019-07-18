@@ -44,7 +44,7 @@ const (
 	fromEmail        = "fromEmail"
 	insecure         = "insecure"
 	hookout          = "hookout"
-	loginauth        = "loginauth"
+	loginAuth        = "loginAuth"
 	bodyTemplateFile = "bodyTemplateFile"
 	subjectTemplate  = "subjectTemplate"
 	defaultSmtpPort  = 587
