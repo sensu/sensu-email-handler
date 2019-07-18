@@ -44,7 +44,7 @@ const (
 	fromEmail        = "fromEmail"
 	insecure         = "insecure"
 	hookout          = "hookout"
-	loginAuth        = "loginAuth"
+	useLoginAuth     = "useLoginAuth"
 	bodyTemplateFile = "bodyTemplateFile"
 	subjectTemplate  = "subjectTemplate"
 	defaultSmtpPort  = 587
@@ -129,8 +129,8 @@ var (
 			Value:     &config.Hookout,
 		},
 		{
-			Path:      loginauth,
-			Argument:  loginauth,
+			Path:      useLoginAuth,
+			Argument:  useLoginAuth,
 			Shorthand: "l",
 			Default:   false,
 			Usage:     "Use \"login auth\" mechanisim",
@@ -294,7 +294,7 @@ func (a *loginAuth) Next(fromServer []byte, more bool) ([]byte, error) {
 		case "Password:":
 			return []byte(a.password), nil
 		default:
-			return nil, errors.New("Unkown fromServer")
+			return nil, fmt.Errorf("Unknown response (%s) from server when attempting to use loginAuth", string(fromServer))
 		}
 	}
 	return nil, nil
