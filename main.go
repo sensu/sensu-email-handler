@@ -8,6 +8,7 @@ import (
 	"math"
 	"net/mail"
 	"net/smtp"
+	"strings"
 	"text/template"
 
 	corev2 "github.com/sensu/sensu-go/api/core/v2"
@@ -23,10 +24,15 @@ type HandlerConfig struct {
 	ToEmail          string
 	FromEmail        string
 	FromHeader       string
-	Subject          string
 	Hookout          bool
 	Insecure         bool
+	LoginAuth        bool
 	BodyTemplateFile string
+	SubjectTemplate  string
+}
+
+type loginAuth struct {
+	username, password string
 }
 
 const (
@@ -38,20 +44,22 @@ const (
 	fromEmail        = "fromEmail"
 	insecure         = "insecure"
 	hookout          = "hookout"
+	enableLoginAuth  = "enableLoginAuth"
 	bodyTemplateFile = "bodyTemplateFile"
+	subjectTemplate  = "subjectTemplate"
 	defaultSmtpPort  = 587
 )
 
 var (
 	config = HandlerConfig{
 		PluginConfig: sensu.PluginConfig{
-			Name:  "sensu-email-handler",
-			Short: "The Sensu Go Email handler for sending an email notification",
+			Name:     "sensu-email-handler",
+			Short:    "The Sensu Go Email handler for sending an email notification",
+			Keyspace: "sensu.io/plugins/email/config",
 		},
 	}
 
-	emailSubjectTemplate = "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}"
-	emailBodyTemplate    = "{{.Check.Output}}"
+	emailBodyTemplate = "{{.Check.Output}}"
 
 	emailConfigOptions = []*sensu.PluginConfigOption{
 		{
@@ -121,12 +129,28 @@ var (
 			Value:     &config.Hookout,
 		},
 		{
+			Path:      enableLoginAuth,
+			Argument:  enableLoginAuth,
+			Shorthand: "l",
+			Default:   false,
+			Usage:     "Use \"login auth\" mechanisim",
+			Value:     &config.LoginAuth,
+		},
+		{
 			Path:      bodyTemplateFile,
 			Argument:  bodyTemplateFile,
 			Shorthand: "T",
 			Default:   "",
 			Usage:     "A template file to use for the body",
 			Value:     &config.BodyTemplateFile,
+		},
+		{
+			Path:      subjectTemplate,
+			Argument:  subjectTemplate,
+			Shorthand: "S",
+			Default:   "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}",
+			Usage:     "A template to use for the subject",
+			Value:     &config.SubjectTemplate,
 		},
 	}
 )
@@ -142,6 +166,9 @@ func checkArgs(_ *corev2.Event) error {
 	}
 	if len(config.ToEmail) == 0 {
 		return errors.New("missing destination email address")
+	}
+	if config.Insecure && config.LoginAuth {
+		return fmt.Errorf("--insecure (-i) and --enableLoginAuth (-l) flags are mutually exclusive")
 	}
 	if !config.Insecure {
 		if len(config.SmtpUsername) == 0 {
@@ -181,8 +208,10 @@ func checkArgs(_ *corev2.Event) error {
 }
 
 func sendEmail(event *corev2.Event) error {
+	var contentType string
+
 	smtpAddress := fmt.Sprintf("%s:%d", config.SmtpHost, config.SmtpPort)
-	subject, subjectErr := resolveTemplate(emailSubjectTemplate, event)
+	subject, subjectErr := resolveTemplate(config.SubjectTemplate, event)
 	if subjectErr != nil {
 		return subjectErr
 	}
@@ -191,9 +220,16 @@ func sendEmail(event *corev2.Event) error {
 		return bodyErr
 	}
 
+	if strings.Contains(body, "<html>") {
+		contentType = "text/html"
+	} else {
+		contentType = "text/plain"
+	}
+
 	msg := []byte("From: " + config.FromHeader + "\r\n" +
 		"To: " + config.ToEmail + "\r\n" +
 		"Subject: " + subject + "\r\n" +
+		"Content-Type: " + contentType + "\r\n" +
 		"\r\n" +
 		body + "\r\n")
 
@@ -216,6 +252,8 @@ func sendEmail(event *corev2.Event) error {
 		}
 
 		return nil
+	} else if config.LoginAuth {
+		return smtp.SendMail(smtpAddress, LoginAuth(config.SmtpUsername, config.SmtpPassword), config.FromEmail, []string{config.ToEmail}, msg)
 	}
 	return smtp.SendMail(smtpAddress, smtp.PlainAuth("", config.SmtpUsername, config.SmtpPassword, config.SmtpHost), config.FromEmail, []string{config.ToEmail}, msg)
 
@@ -233,4 +271,31 @@ func resolveTemplate(templateValue string, event *corev2.Event) (string, error) 
 	}
 
 	return resolved.String(), nil
+}
+
+// https://gist.github.com/homme/22b457eb054a07e7b2fb
+// https://gist.github.com/andelf/5118732
+
+// MIT license (c) andelf 2013
+
+func LoginAuth(username, password string) smtp.Auth {
+	return &loginAuth{username, password}
+}
+
+func (a *loginAuth) Start(server *smtp.ServerInfo) (string, []byte, error) {
+	return "LOGIN", []byte(a.username), nil
+}
+
+func (a *loginAuth) Next(fromServer []byte, more bool) ([]byte, error) {
+	if more {
+		switch string(fromServer) {
+		case "Username:":
+			return []byte(a.username), nil
+		case "Password:":
+			return []byte(a.password), nil
+		default:
+			return nil, fmt.Errorf("Unknown response (%s) from server when attempting to use loginAuth", string(fromServer))
+		}
+	}
+	return nil, nil
 }
