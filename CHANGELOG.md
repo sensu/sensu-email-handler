@@ -7,6 +7,8 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2019-07-23
+
 ### Changed
 - Updated documentation to reflect loginauth and annotations
 
