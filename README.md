@@ -50,18 +50,20 @@ Usage:
   sensu-email-handler [flags]
 
 Flags:
+  -a, --authMethod string         The SMTP authentication method, one of 'none', 'plain', or 'login' (default "plain")
   -T, --bodyTemplateFile string   A template file to use for the body
-  -t, --toEmail string            The 'to' email address
+  -l, --enableLoginAuth           [deprecated] Use "login auth" mechanisim
   -f, --fromEmail string          The 'from' email address
   -h, --help                      help for sensu-email-handler
+  -H, --hookout                   Include output from check hook(s)
+  -i, --insecure                  [deprecated] Use an insecure connection (unauthenticated on port 25)
   -s, --smtpHost string           The SMTP host to use to send to send email
   -p, --smtpPassword string       The SMTP password, if not in env SMTP_PASSWORD
-  -P, --smtpPort uint16           The SMTP server port (default 587)
+  -P, --smtpPort uint             The SMTP server port (default 587)
   -u, --smtpUsername string       The SMTP username, if not in env SMTP_USERNAME
-  -H, --hookout                   Include output from check hook(s)
-  -i, --insecure                  Use an insecure connection (unauthenticated on port 25)
-  -l, --enableLoginAuth           Use "login auth" mechanism
   -S, --subjectTemplate string    A template to use for the subject (default "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}")
+  -k, --tlsSkipVerify             Do not verify TLS certificates
+  -t, --toEmail string            The 'to' email address
 ```
 
 ### Annotations

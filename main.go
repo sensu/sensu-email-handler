@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -24,11 +25,15 @@ type HandlerConfig struct {
 	ToEmail          string
 	FromEmail        string
 	FromHeader       string
+	AuthMethod       string
+	TLSSkipVerify    bool
 	Hookout          bool
-	Insecure         bool
-	LoginAuth        bool
 	BodyTemplateFile string
 	SubjectTemplate  string
+
+	// deprecated options
+	Insecure  bool
+	LoginAuth bool
 }
 
 type loginAuth struct {
@@ -42,12 +47,22 @@ const (
 	smtpPort         = "smtpPort"
 	toEmail          = "toEmail"
 	fromEmail        = "fromEmail"
-	insecure         = "insecure"
+	authMethod       = "authMethod"
+	tlsSkipVerify    = "tlsSkipVerify"
 	hookout          = "hookout"
-	enableLoginAuth  = "enableLoginAuth"
 	bodyTemplateFile = "bodyTemplateFile"
 	subjectTemplate  = "subjectTemplate"
 	defaultSmtpPort  = 587
+
+	// deprecated options
+	insecure        = "insecure"
+	enableLoginAuth = "enableLoginAuth"
+)
+
+const (
+	AuthMethodNone  = "none"
+	AuthMethodPlain = "plain"
+	AuthMethodLogin = "login"
 )
 
 var (
@@ -113,12 +128,20 @@ var (
 			Value:     &config.FromEmail,
 		},
 		{
-			Path:      insecure,
-			Argument:  insecure,
-			Shorthand: "i",
+			Path:      tlsSkipVerify,
+			Argument:  tlsSkipVerify,
+			Shorthand: "k",
 			Default:   false,
-			Usage:     "Use an insecure connection (unauthenticated on port 25)",
-			Value:     &config.Insecure,
+			Usage:     "Do not verify TLS certificates",
+			Value:     &config.TLSSkipVerify,
+		},
+		{
+			Path:      authMethod,
+			Argument:  authMethod,
+			Shorthand: "a",
+			Default:   AuthMethodPlain,
+			Usage:     "The SMTP authentication method, one of 'none', 'plain', or 'login'",
+			Value:     &config.AuthMethod,
 		},
 		{
 			Path:      hookout,
@@ -127,14 +150,6 @@ var (
 			Default:   false,
 			Usage:     "Include output from check hook(s)",
 			Value:     &config.Hookout,
-		},
-		{
-			Path:      enableLoginAuth,
-			Argument:  enableLoginAuth,
-			Shorthand: "l",
-			Default:   false,
-			Usage:     "Use \"login auth\" mechanisim",
-			Value:     &config.LoginAuth,
 		},
 		{
 			Path:      bodyTemplateFile,
@@ -152,6 +167,24 @@ var (
 			Usage:     "A template to use for the subject",
 			Value:     &config.SubjectTemplate,
 		},
+
+		// deprecated options
+		{
+			Path:      insecure,
+			Argument:  insecure,
+			Shorthand: "i",
+			Default:   false,
+			Usage:     "[deprecated] Use an insecure connection (unauthenticated on port 25)",
+			Value:     &config.Insecure,
+		},
+		{
+			Path:      enableLoginAuth,
+			Argument:  enableLoginAuth,
+			Shorthand: "l",
+			Default:   false,
+			Usage:     "[deprecated] Use \"login auth\" mechanisim",
+			Value:     &config.LoginAuth,
+		},
 	}
 )
 
@@ -164,25 +197,42 @@ func checkArgs(_ *corev2.Event) error {
 	if len(config.SmtpHost) == 0 {
 		return errors.New("missing smtp host")
 	}
+	if config.SmtpPort > math.MaxUint16 {
+		return errors.New("smtp port is out of range")
+	}
 	if len(config.ToEmail) == 0 {
 		return errors.New("missing destination email address")
 	}
-	if config.Insecure && config.LoginAuth {
-		return fmt.Errorf("--insecure (-i) and --enableLoginAuth (-l) flags are mutually exclusive")
+	if len(config.FromEmail) == 0 {
+		return errors.New("from email is empty")
 	}
-	if !config.Insecure {
+
+	// translate deprecated options to replacements
+	if config.LoginAuth {
+		config.AuthMethod = AuthMethodLogin
+	}
+	if config.Insecure {
+		config.SmtpPort = 25
+		config.AuthMethod = AuthMethodNone
+		config.TLSSkipVerify = true
+	}
+
+	switch config.AuthMethod {
+	case AuthMethodPlain, AuthMethodNone, AuthMethodLogin:
+	case "":
+		config.AuthMethod = AuthMethodPlain
+	default:
+		return fmt.Errorf("%s is not a valid auth method", config.AuthMethod)
+	}
+	if config.AuthMethod != AuthMethodNone {
 		if len(config.SmtpUsername) == 0 {
 			return errors.New("smtp username is empty")
 		}
 		if len(config.SmtpPassword) == 0 {
 			return errors.New("smtp password is empty")
 		}
-	} else {
-		config.SmtpPort = 25
 	}
-	if config.SmtpPort > math.MaxUint16 {
-		return errors.New("smtp port is out of range")
-	}
+
 	if config.Hookout && len(config.BodyTemplateFile) > 0 {
 		return errors.New("--hookout (-H) and --bodyTemplateFile (-T) are mutually exclusive")
 	}
@@ -195,9 +245,7 @@ func checkArgs(_ *corev2.Event) error {
 		}
 		emailBodyTemplate = string(templateBytes)
 	}
-	if len(config.FromEmail) == 0 {
-		return errors.New("from email is empty")
-	}
+
 	fromAddr, addrErr := mail.ParseAddress(config.FromEmail)
 	if addrErr != nil {
 		return addrErr
@@ -233,30 +281,55 @@ func sendEmail(event *corev2.Event) error {
 		"\r\n" +
 		body + "\r\n")
 
-	if config.Insecure {
-		smtpconn, connErr := smtp.Dial(smtpAddress)
-		if connErr != nil {
-			return connErr
-		}
-		defer smtpconn.Close()
-		smtpconn.Mail(config.FromEmail)
-		smtpconn.Rcpt(config.ToEmail)
-		smtpdata, dataErr := smtpconn.Data()
-		if dataErr != nil {
-			return dataErr
-		}
-		defer smtpdata.Close()
-		buf := bytes.NewBuffer(msg)
-		if _, dataErr := buf.WriteTo(smtpdata); dataErr != nil {
-			return dataErr
-		}
-
-		return nil
-	} else if config.LoginAuth {
-		return smtp.SendMail(smtpAddress, LoginAuth(config.SmtpUsername, config.SmtpPassword), config.FromEmail, []string{config.ToEmail}, msg)
+	var auth smtp.Auth
+	switch config.AuthMethod {
+	case AuthMethodPlain:
+		auth = smtp.PlainAuth("", config.SmtpUsername, config.SmtpPassword, config.SmtpHost)
+	case AuthMethodLogin:
+		auth = LoginAuth(config.SmtpUsername, config.SmtpPassword)
 	}
-	return smtp.SendMail(smtpAddress, smtp.PlainAuth("", config.SmtpUsername, config.SmtpPassword, config.SmtpHost), config.FromEmail, []string{config.ToEmail}, msg)
 
+	conn, err := smtp.Dial(smtpAddress)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	if ok, _ := conn.Extension("STARTTLS"); ok {
+		tlsConfig := &tls.Config{
+			ServerName:         config.SmtpHost,
+			InsecureSkipVerify: config.TLSSkipVerify,
+		}
+		if err := conn.StartTLS(tlsConfig); err != nil {
+			return err
+		}
+	}
+
+	if ok, _ := conn.Extension("AUTH"); ok && auth != nil {
+		if err := conn.Auth(auth); err != nil {
+			return err
+		}
+	}
+
+	if err := conn.Mail(config.FromEmail); err != nil {
+		return err
+	}
+	if err := conn.Rcpt(config.ToEmail); err != nil {
+		return err
+	}
+
+	data, err := conn.Data()
+	if err != nil {
+		return err
+	}
+	if _, err := data.Write(msg); err != nil {
+		return err
+	}
+	if err := data.Close(); err != nil {
+		return err
+	}
+
+	return conn.Quit()
 }
 
 func resolveTemplate(templateValue string, event *corev2.Event) (string, error) {
