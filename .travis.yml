@@ -1,16 +1,10 @@
 language: go
 go:
-- 1.10.x
+- 1.12.x
 install:
-- go get gopkg.in/alecthomas/gometalinter.v1
-- go get github.com/gordonklaus/ineffassign
-- go get github.com/jgautheron/goconst/cmd/goconst
-- go get github.com/kisielk/errcheck
-- go get github.com/golang/dep/cmd/dep
-- dep ensure
+- curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.17.1
 script:
-- gometalinter.v1 --vendor --disable-all --enable=vet --enable=ineffassign
-  --enable=goconst --tests ./...
+- golangci-lint run --disable-all --enable=vet --enable=ineffassign --enable=goconst --tests ./...
 - go test -v -race ./...
 
 before_script:
@@ -32,4 +26,5 @@ after_deploy:
 
 env:
   global:
-    secure: E47hZU4QXV9xLIseZD75H7Is6VmboB4T0WXF4F5vfAvHmmmm77cMLUUMkNr9XSsg+VdmA/KWkuQmsw6mKOigJqjrYbNiYORxJsPECUe7ZqKt0ik+Tj2YDc7GToRkBd478iXStpZsrnS9RTgoomN5SVv2mTCzFql2ZA/HKoJZrkwW9KaUbxewaa2grmfTwJsyPSLbeGnGhJAZ4f8YYO8HmaeFO6ebYMu4GpZ825/4jE54sHloE7G4Uzd7cMhg0MiC2Np9NF8qLtCIH7WwMQTVS9H/+423CbmWheq2Puc1R3TzqTg0Y7/Be2TMFsc8P9Xr/cpQf3/sTEjkEu0YwEFr6StrPvRXLbzaZlFLI98M8+6956pH020Aez85jOxXBFW9TnL8Xb28lEFk8j6JIQp7Zc+VSoFod8NU3fkAFCilzppHgdfkSlBCPez2dThD4MxXzFABxMXcLN+2eUXmzgtO42T5xQuApsodfnKMKHQhWJrn/uP5EtsHtYs7wTwmmQQXxW1y9F7ugDXrCPDAEwLDPXPHNyxP/m1GJqbZBSqJM0B07lLQL2horeup8kS3/3vAlCbWOPUEIZiOXCUc3rSgyRDtCXHEnHzX5muZNl6jc8QLgcbl4An771qkKLLyJQ/xGLdCYJjFMSCSOyJ+i7qG630+6brleNUiZ8pUgHVa33Y=
+    - GO111MODULE=on
+    - secure: E47hZU4QXV9xLIseZD75H7Is6VmboB4T0WXF4F5vfAvHmmmm77cMLUUMkNr9XSsg+VdmA/KWkuQmsw6mKOigJqjrYbNiYORxJsPECUe7ZqKt0ik+Tj2YDc7GToRkBd478iXStpZsrnS9RTgoomN5SVv2mTCzFql2ZA/HKoJZrkwW9KaUbxewaa2grmfTwJsyPSLbeGnGhJAZ4f8YYO8HmaeFO6ebYMu4GpZ825/4jE54sHloE7G4Uzd7cMhg0MiC2Np9NF8qLtCIH7WwMQTVS9H/+423CbmWheq2Puc1R3TzqTg0Y7/Be2TMFsc8P9Xr/cpQf3/sTEjkEu0YwEFr6StrPvRXLbzaZlFLI98M8+6956pH020Aez85jOxXBFW9TnL8Xb28lEFk8j6JIQp7Zc+VSoFod8NU3fkAFCilzppHgdfkSlBCPez2dThD4MxXzFABxMXcLN+2eUXmzgtO42T5xQuApsodfnKMKHQhWJrn/uP5EtsHtYs7wTwmmQQXxW1y9F7ugDXrCPDAEwLDPXPHNyxP/m1GJqbZBSqJM0B07lLQL2horeup8kS3/3vAlCbWOPUEIZiOXCUc3rSgyRDtCXHEnHzX5muZNl6jc8QLgcbl4An771qkKLLyJQ/xGLdCYJjFMSCSOyJ+i7qG630+6brleNUiZ8pUgHVa33Y=
