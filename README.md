@@ -103,11 +103,19 @@ The plugin provides an option to use a template as for the body of the email and
 <html>
 Greetings,<br>
 <br>
+<h3>Informational Details</h3>
 <b>Check</b>: {{ .Check.Name }}<br>
 <b>Entity</b>: {{ .Entity.Name }}<br>
 <b>State</b>: {{ .Check.State }}<br>
 <b>Occurrences</b>: {{ .Check.Occurrences }}<br>
 <b>Playbook</b>: https://example.com/monitoring/wiki/playbook<br>
+<h3>Check Output Details</h3>
+<b>Check Output</b>: {{.Check.Output}}<br>
+<b>Check Hook: {{range .Check.Hooks}}Hook Name</b>:  {{.Name}}<br>
+<b>Hook Command</b>:  {{.Command}}
+<b>Hook Output</b>: {{.Output}}
+{{end}}
+
 <br>
 #monitoringlove,<br>
 <br>
