@@ -93,6 +93,39 @@ Example:
 
 ```
 
+### Templates
+
+The plugin provides an option to use a template as for the body of the email and is capable of using HTML for formatting the email. An example is provided below:
+
+```
+/etc/sensu/email_template
+
+<html>
+Greetings,<br>
+<br>
+<b>Check</b>: {{ .Check.Name }}<br>
+<b>Entity</b>: {{ .Entity.Name }}<br>
+<b>State</b>: {{ .Check.State }}<br>
+<b>Occurrences</b>: {{ .Check.Occurrences }}<br>
+<b>Playbook</b>: https://example.com/monitoring/wiki/playbook<br>
+<br>
+#monitoringlove,<br>
+<br>
+Sensu<br>
+</html>
+```
+
+Note that this uses tokens to populate the values provided by the event. 
+
+At the time of this example, check hooks and templates are not able to be used together via the `-H` and `-T` flags. However, you may include the hook output as part of the template via the following:
+
+```
+{{range .Check.Hooks}}Hook Name:  {{.Name}}
+Hook Command:  {{.Command}}
+
+{{.Output}}
+```
+
 ## Contributing
 
 See https://github.com/sensu/sensu-go/blob/master/CONTRIBUTING.md
