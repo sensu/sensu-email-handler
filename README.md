@@ -111,9 +111,10 @@ Greetings,<br>
 <b>Playbook</b>: https://example.com/monitoring/wiki/playbook<br>
 <h3>Check Output Details</h3>
 <b>Check Output</b>: {{.Check.Output}}<br>
-<b>Check Hook: {{range .Check.Hooks}}Hook Name</b>:  {{.Name}}<br>
-<b>Hook Command</b>:  {{.Command}}
-<b>Hook Output</b>: {{.Output}}
+<h4>Check Hook(s)</h4>
+{{range .Check.Hooks}}<b>Hook Name</b>:  {{.Name}}<br>
+<b>Hook Command</b>:  {{.Command}}<br>
+<b>Hook Output</b>: {{.Output}}<br>
 {{end}}
 
 <br>
@@ -122,6 +123,8 @@ Greetings,<br>
 Sensu<br>
 </html>
 ```
+
+
 
 Note that this uses tokens to populate the values provided by the event. 
 
