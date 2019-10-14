@@ -4,20 +4,17 @@ TravisCI: [![TravisCI Build Status](https://travis-ci.org/sensu/sensu-email-hand
 The Sensu Go Email Handler is a [Sensu Event Handler][2] for sending
 incident notification emails.
 
-## Installation
-
-Download the latest version of the sensu-email-handler from [releases][1],
-or create an executable script from this source.
-
-From the local path of the sensu-email-handler repository:
-
-```
-go build -o /usr/local/bin/sensu-email-handler main.go
-```
-
 ## Configuration
 
-Example Sensu Go definition:
+### Asset registration
+
+Assets are the best way to make use of this handler. If you're not using an asset, please consider doing so! If you're using sensuctl 5.13 or later, you can use the following command to add the asset: 
+
+`sensuctl asset add sensu/sensu-email-handler`
+
+If you're using an earlier version of sensuctl, you can download the asset definition from [this project's Bonsai Asset Index page](https://bonsai.sensu.io/assets/sensu/sensu-email-handler).
+
+#### Example Sensu Go handler definition:
 
 ```json
 {
@@ -139,7 +136,15 @@ Hook Command:  {{.Command}}
 
 ## Contributing
 
-See https://github.com/sensu/sensu-go/blob/master/CONTRIBUTING.md
+Download the latest version of the sensu-email-handler from [releases][1],
+or create an executable script from this source.
+
+From the local path of the sensu-email-handler repository:
+
+```
+go build -o /usr/local/bin/sensu-email-handler main.go
+```
+For additional instructions, https://github.com/sensu/sensu-go/blob/master/CONTRIBUTING.md
 
 [1]: https://github.com/sensu/sensu-email-handler/releases
 [2]: https://docs.sensu.io/sensu-go/5.0/reference/handlers/#how-do-sensu-handlers-work
