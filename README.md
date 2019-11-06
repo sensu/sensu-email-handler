@@ -1,40 +1,20 @@
+[![Bonsai Asset Badge](https://img.shields.io/badge/Sensu%20Go%20Email%20Handler-Download%20Me-brightgreen.svg?colorB=89C967&logo=sensu)](https://bonsai.sensu.io/assets/sensu/sensu-email-handler) TravisCI: [![TravisCI Build Status](https://travis-ci.org/sensu/sensu-email-handler.svg?branch=master)](https://travis-ci.org/sensu/sensu-email-handler)
+
 # Sensu Go Email Handler Plugin
-TravisCI: [![TravisCI Build Status](https://travis-ci.org/sensu/sensu-email-handler.svg?branch=master)](https://travis-ci.org/sensu/sensu-email-handler)
+- [Overview](#overview)
+- [Usage examples](#usage-examples)
+- [Configuration](#configuration)
+  - [Asset registration](#asset-registration)
+  - [Asset manifest](#asset-manifest)
+  - [Handler manifest](#handler-manifest)
+- [Annotations](#annotations)
+- [Templates](#templates)
+- [Installation from source and contributing](#installation-from-source-and-contributing)
+
+## Overview
 
 The Sensu Go Email Handler is a [Sensu Event Handler][2] for sending
 incident notification emails.
-
-## Configuration
-
-### Asset registration
-
-Assets are the best way to make use of this handler. If you're not using an asset, please consider doing so! If you're using sensuctl 5.13 or later, you can use the following command to add the asset: 
-
-`sensuctl asset add sensu/sensu-email-handler`
-
-If you're using an earlier version of sensuctl, you can download the asset definition from [this project's Bonsai Asset Index page](https://bonsai.sensu.io/assets/sensu/sensu-email-handler).
-
-#### Example Sensu Go handler definition:
-
-```json
-{
-    "api_version": "core/v2",
-    "type": "Handler",
-    "metadata": {
-        "namespace": "default",
-        "name": "email"
-    },
-    "spec": {
-        "type": "pipe",
-        "command": "sensu-email-handler -f from@example.com -t to@example.com -s smtp.example.com -u user -p password",
-        "timeout": 10,
-        "filters": [
-            "is_incident",
-            "not_silenced"
-        ]
-    }
-}
-```
 
 ## Usage Examples
 
@@ -59,6 +39,61 @@ Flags:
   -i, --insecure                  Use an insecure connection (unauthenticated on port 25)
   -l, --enableLoginAuth           Use "login auth" mechanism
   -S, --subjectTemplate string    A template to use for the subject (default "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}")
+```
+## Configuration
+
+### Asset registration
+
+Assets are the best way to make use of this handler. If you're not using an asset, please consider doing so! If you're using sensuctl 5.13 or later, you can use the following command to add the asset: 
+
+`sensuctl asset add sensu/sensu-email-handler`
+
+If you're using an earlier version of sensuctl, you can download the asset definition from [this project's Bonsai Asset Index page](https://bonsai.sensu.io/assets/sensu/sensu-email-handler).
+
+### Asset manifest
+
+```yml
+---
+type: Asset
+api_version: core/v2
+metadata:
+  name: sensu-email-handler_linux_amd64
+  labels: 
+  annotations:
+    io.sensu.bonsai.url: https://bonsai.sensu.io/assets/sensu/sensu-email-handler
+    io.sensu.bonsai.api_url: https://bonsai.sensu.io/api/v1/assets/sensu/sensu-email-handler
+    io.sensu.bonsai.tier: Supported
+    io.sensu.bonsai.version: 0.2.0
+    io.sensu.bonsai.namespace: sensu
+    io.sensu.bonsai.name: sensu-email-handler
+    io.sensu.bonsai.tags: handler
+spec:
+  url: https://assets.bonsai.sensu.io/45eaac0851501a19475a94016a4f8f9688a280f6/sensu-email-handler_0.2.0_linux_amd64.tar.gz
+  sha512: d69df76612b74acd64aef8eed2ae10d985f6073f9b014c8115b7896ed86786128c20249fd370f30672bf9a11b041a99adb05e3a23342d3ad80d0c346ec23a946
+  filters:
+  - entity.system.os == 'linux'
+  - entity.system.arch == 'amd64'
+```
+
+### Handler manifest
+
+```yml
+---
+api_version: core/v2
+type: Handler
+metadata:
+  namespace: default
+  name: email
+spec:
+  type: pipe
+  command: sensu-email-handler -f from@example.com -t to@example.com -s smtp.example.com
+    -u user -p password
+  timeout: 10
+  filters:
+  - is_incident
+  - not_silenced
+  runtime_assets:
+  - sensu/sensu-email-handler
 ```
 
 ### Annotations
@@ -121,20 +156,18 @@ Sensu<br>
 </html>
 ```
 
-
-
 Note that this uses tokens to populate the values provided by the event. 
 
 At the time of this example, check hooks and templates are not able to be used together via the `-H` and `-T` flags. However, you may include the hook output as part of the template via the following:
 
 ```
-{{range .Check.Hooks}}Hook Name:  {{.Name}}
+{{range .Check.Hooks}}
+Hook Name:  {{.Name}}
 Hook Command:  {{.Command}}
-
 {{.Output}}
 ```
 
-## Contributing
+## Installing from source and contributing
 
 Download the latest version of the sensu-email-handler from [releases][1],
 or create an executable script from this source.
@@ -144,7 +177,7 @@ From the local path of the sensu-email-handler repository:
 ```
 go build -o /usr/local/bin/sensu-email-handler main.go
 ```
-For additional instructions, https://github.com/sensu/sensu-go/blob/master/CONTRIBUTING.md
+For additional instructions, see [CONTRIBUTING](https://github.com/sensu/sensu-go/blob/master/CONTRIBUTING.md)
 
 [1]: https://github.com/sensu/sensu-email-handler/releases
-[2]: https://docs.sensu.io/sensu-go/5.0/reference/handlers/#how-do-sensu-handlers-work
+[2]: https://docs.sensu.io/sensu-go/latest/reference/handlers/#how-do-sensu-handlers-work
