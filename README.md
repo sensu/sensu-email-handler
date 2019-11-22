@@ -75,7 +75,7 @@ spec:
   - entity.system.arch == 'amd64'
 ```
 
-### Handler manifest
+### Handler definition
 
 ```yml
 ---
