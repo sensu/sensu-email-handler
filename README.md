@@ -5,7 +5,7 @@
 - [Usage examples](#usage-examples)
 - [Configuration](#configuration)
   - [Asset registration](#asset-registration)
-  - [Asset manifest](#asset-manifest)
+  - [Asset definition](#asset-definition)
   - [Handler manifest](#handler-manifest)
 - [Annotations](#annotations)
 - [Templates](#templates)
