@@ -9,7 +9,7 @@
   - [Handler definition](#handler-definition)
 - [Annotations](#annotations)
 - [Templates](#templates)
-- [Installation from source and contributing](#installation-from-source-and-contributing)
+- [Installing from source and contributing](#installing-from-source-and-contributing)
 
 ## Overview
 
