@@ -7,6 +7,8 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0] - 2020-01-23
+
 ### Changed
 - Deprecated the `insecure` flag. Use the combination of `--tlsSkipVerify`,
   `--authMethod none`, and `--smtpPort 25` for the same behavior.
