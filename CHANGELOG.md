@@ -7,6 +7,15 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+- Deprecated the `insecure` flag. Use the combination of `--tlsSkipVerify`,
+  `--authMethod none`, and `--smtpPort 25` for the same behavior.
+- Deprecated the `enableLoginAuth` flag in favor of `--authMethod login`.
+
+### Added
+- Added `tlsSkipVerify` option to disable TLS certificate checks
+- Added `authMethod` flag to switch between none, plain, and login auth
+
 ## [0.2.0] - 2019-07-23
 
 ### Changed
