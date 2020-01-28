@@ -135,30 +135,32 @@ The plugin provides an option to use a template as for the body of the email and
 /etc/sensu/email_template
 
 <html>
-Greetings,<br>
-<br>
+Greetings,
+
 <h3>Informational Details</h3>
-<b>Check</b>: {{ .Check.Name }}<br>
-<b>Entity</b>: {{ .Entity.Name }}<br>
-<b>State</b>: {{ .Check.State }}<br>
-<b>Occurrences</b>: {{ .Check.Occurrences }}<br>
-<b>Playbook</b>: https://example.com/monitoring/wiki/playbook<br>
+<b>Check</b>: {{ .Check.Name }}
+<b>Entity</b>: {{ .Entity.Name }}
+<b>State</b>: {{ .Check.State }}
+<b>Occurrences</b>: {{ .Check.Occurrences }}
+<b>Playbook</b>: https://example.com/monitoring/wiki/playbook
 <h3>Check Output Details</h3>
-<b>Check Output</b>: {{.Check.Output}}<br>
+<b>Check Output</b>: {{.Check.Output}}
 <h4>Check Hook(s)</h4>
-{{range .Check.Hooks}}<b>Hook Name</b>:  {{.Name}}<br>
-<b>Hook Command</b>:  {{.Command}}<br>
-<b>Hook Output</b>: {{.Output}}<br>
+{{range .Check.Hooks}}<b>Hook Name</b>:  {{.Name}}
+<b>Hook Command</b>:  {{.Command}}
+<b>Hook Output</b>: {{.Output}}
 {{end}}
 
-<br>
+
 #monitoringlove,<br>
-<br>
-Sensu<br>
+
+Sensu
 </html>
 ```
 
 Note that this uses tokens to populate the values provided by the event. 
+
+Also note that line breaks in your template and any text surfaced by token substitution are replaced with the HTML &lt;br&gt; tag.
 
 At the time of this example, check hooks and templates are not able to be used together via the `-H` and `-T` flags. However, you may include the hook output as part of the template via the following:
 
