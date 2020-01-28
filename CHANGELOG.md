@@ -7,6 +7,9 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- For html emails, sub &lt;br&gt; for \n in body
+
 ### Changed
 - Fixed goreleaser deprecated archive to use archives
 
