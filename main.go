@@ -276,12 +276,11 @@ func sendEmail(event *corev2.Event) error {
 	}
 
 	t := time.Now()
-	layout := time.RFC1123Z
 
 	msg := []byte("From: " + config.FromHeader + "\r\n" +
 		"To: " + config.ToEmail + "\r\n" +
 		"Subject: " + subject + "\r\n" +
-		"Date: " + t.Format(layout) + "\r\n" +
+		"Date: " + t.Format(time.RFC1123Z) + "\r\n" +
 		"Content-Type: " + contentType + "\r\n" +
 		"\r\n" +
 		body + "\r\n")
