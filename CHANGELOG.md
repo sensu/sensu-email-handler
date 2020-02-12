@@ -7,11 +7,15 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Added
+## [0.4.0] - 2020-02-12
+
+### Fixed
 - For html emails, sub &lt;br&gt; for \n in body
 
 ### Changed
 - Fixed goreleaser deprecated archive to use archives
+- Now depends on github.com/sensu-community/sensu-plugin-sdk@v0.6.0
+- Now using Github Actions CI instead of Travis CI
 
 ### Added
 - Added Date: header
