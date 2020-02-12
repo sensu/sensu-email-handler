@@ -1,6 +1,6 @@
 [![Bonsai Asset Badge](https://img.shields.io/badge/Sensu%20Go%20Email%20Handler-Download%20Me-brightgreen.svg?colorB=89C967&logo=sensu)](https://bonsai.sensu.io/assets/sensu/sensu-email-handler)
 
-# Sensu Go Email Handler Plugin
+# Sensu Email Handler
 - [Overview](#overview)
 - [Usage examples](#usage-examples)
 - [Configuration](#configuration)
@@ -21,7 +21,7 @@ incident notification emails.
 ### Help
 
 ```
-The Sensu Go Email handler for sending an email notification
+The Sensu Email handler sends an email notifications
 
 Usage:
   sensu-email-handler [flags]
