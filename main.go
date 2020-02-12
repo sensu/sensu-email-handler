@@ -13,8 +13,8 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/sensu-community/sensu-plugin-sdk/sensu"
 	corev2 "github.com/sensu/sensu-go/api/core/v2"
-	"github.com/sensu/sensu-plugins-go-library/sensu"
 )
 
 type HandlerConfig struct {
@@ -341,11 +341,11 @@ func resolveTemplate(templateValue string, event *corev2.Event) (string, error) 
 	var resolved bytes.Buffer
 	tmpl, err := template.New("test").Parse(templateValue)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	err = tmpl.Execute(&resolved, *event)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	return resolved.String(), nil

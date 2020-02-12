@@ -1,4 +1,4 @@
-[![Bonsai Asset Badge](https://img.shields.io/badge/Sensu%20Go%20Email%20Handler-Download%20Me-brightgreen.svg?colorB=89C967&logo=sensu)](https://bonsai.sensu.io/assets/sensu/sensu-email-handler) TravisCI: [![TravisCI Build Status](https://travis-ci.org/sensu/sensu-email-handler.svg?branch=master)](https://travis-ci.org/sensu/sensu-email-handler)
+[![Bonsai Asset Badge](https://img.shields.io/badge/Sensu%20Go%20Email%20Handler-Download%20Me-brightgreen.svg?colorB=89C967&logo=sensu)](https://bonsai.sensu.io/assets/sensu/sensu-email-handler)
 
 # Sensu Go Email Handler Plugin
 - [Overview](#overview)
