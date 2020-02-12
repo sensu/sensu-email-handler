@@ -271,6 +271,7 @@ func sendEmail(event *corev2.Event) error {
 
 	if strings.Contains(body, "<html>") {
 		contentType = "text/html"
+		body = strings.Replace(body, "\n", "<br>", -1)
 	} else {
 		contentType = "text/plain"
 	}
