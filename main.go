@@ -11,6 +11,7 @@ import (
 	"net/smtp"
 	"strings"
 	"text/template"
+	"time"
 
 	corev2 "github.com/sensu/sensu-go/api/core/v2"
 	"github.com/sensu/sensu-plugins-go-library/sensu"
@@ -274,9 +275,12 @@ func sendEmail(event *corev2.Event) error {
 		contentType = "text/plain"
 	}
 
+	t := time.Now()
+
 	msg := []byte("From: " + config.FromHeader + "\r\n" +
 		"To: " + config.ToEmail + "\r\n" +
 		"Subject: " + subject + "\r\n" +
+		"Date: " + t.Format(time.RFC1123Z) + "\r\n" +
 		"Content-Type: " + contentType + "\r\n" +
 		"\r\n" +
 		body + "\r\n")
