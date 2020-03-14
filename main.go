@@ -17,13 +17,14 @@ import (
 	corev2 "github.com/sensu/sensu-go/api/core/v2"
 )
 
+//HandlerConfig config options for email handler.
 type HandlerConfig struct {
 	sensu.PluginConfig
 	SmtpHost         string
 	SmtpUsername     string
 	SmtpPassword     string
 	SmtpPort         uint64
-	ToEmail          string
+	ToEmail          []string
 	FromEmail        string
 	FromHeader       string
 	AuthMethod       string
@@ -40,6 +41,8 @@ type HandlerConfig struct {
 type loginAuth struct {
 	username, password string
 }
+
+type rcpts []string
 
 const (
 	smtpHost         = "smtpHost"
@@ -116,8 +119,8 @@ var (
 			Path:      toEmail,
 			Argument:  toEmail,
 			Shorthand: "t",
-			Default:   "",
-			Usage:     "The 'to' email address",
+			Default:   []string{},
+			Usage:     "The 'to' email address (accepts comma delimited and/or multiple flags)",
 			Value:     &config.ToEmail,
 		},
 		{
@@ -276,10 +279,12 @@ func sendEmail(event *corev2.Event) error {
 		contentType = "text/plain"
 	}
 
+	recipients := newRcpts(config.ToEmail)
+
 	t := time.Now()
 
 	msg := []byte("From: " + config.FromHeader + "\r\n" +
-		"To: " + config.ToEmail + "\r\n" +
+		"To: " + recipients.String() + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"Date: " + t.Format(time.RFC1123Z) + "\r\n" +
 		"Content-Type: " + contentType + "\r\n" +
@@ -319,7 +324,7 @@ func sendEmail(event *corev2.Event) error {
 	if err := conn.Mail(config.FromEmail); err != nil {
 		return err
 	}
-	if err := conn.Rcpt(config.ToEmail); err != nil {
+	if err := recipients.rcpt(conn); err != nil {
 		return err
 	}
 
@@ -349,6 +354,44 @@ func resolveTemplate(templateValue string, event *corev2.Event) (string, error) 
 	}
 
 	return resolved.String(), nil
+}
+
+//newRcpts trims "spaces" and checks each toEmails for commas.
+// Any additional rcpts via commas appends to the end.
+func newRcpts(toEmails []string) rcpts {
+	tos := make([]string, len(toEmails))
+	ntos := []string{}
+
+	for i, t := range toEmails {
+		ts := strings.Split(t, ",")
+		tos[i] = strings.TrimSpace(ts[0])
+		if len(ts) == 1 {
+			continue
+		}
+
+		// first 1 aleady in slice
+		for _, tt := range ts[1:] {
+			ntos = append(ntos, strings.TrimSpace(tt))
+		}
+	}
+
+	if len(ntos) > 0 {
+		return rcpts(append(tos, ntos...))
+	}
+	return rcpts(tos)
+}
+
+func (r rcpts) rcpt(c *smtp.Client) error {
+	for _, to := range r {
+		if err := c.Rcpt(to); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (r rcpts) String() string {
+	return strings.Join(r, ",")
 }
 
 // https://gist.github.com/homme/22b457eb054a07e7b2fb
