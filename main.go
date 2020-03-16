@@ -5,12 +5,14 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	htemplate "html/template"
+	"io"
 	"io/ioutil"
 	"math"
 	"net/mail"
 	"net/smtp"
 	"strings"
-	"text/template"
+	ttemplate "text/template"
 	"time"
 
 	"github.com/sensu-community/sensu-plugin-sdk/sensu"
@@ -41,6 +43,11 @@ type loginAuth struct {
 	username, password string
 }
 
+// used to handle getting text/template or html/template
+type templater interface {
+	Execute(wr io.Writer, data interface{}) error
+}
+
 const (
 	smtpHost         = "smtpHost"
 	smtpUsername     = "smtpUsername"
@@ -64,6 +71,12 @@ const (
 	AuthMethodNone  = "none"
 	AuthMethodPlain = "plain"
 	AuthMethodLogin = "login"
+)
+
+// Email body content
+const (
+	ContentHTML  = "text/html"
+	ContentPlain = "text/plain"
 )
 
 var (
@@ -260,20 +273,20 @@ func sendEmail(event *corev2.Event) error {
 	var contentType string
 
 	smtpAddress := fmt.Sprintf("%s:%d", config.SmtpHost, config.SmtpPort)
-	subject, subjectErr := resolveTemplate(config.SubjectTemplate, event)
+	subject, subjectErr := resolveTemplate(config.SubjectTemplate, event, ContentPlain)
 	if subjectErr != nil {
 		return subjectErr
 	}
-	body, bodyErr := resolveTemplate(emailBodyTemplate, event)
-	if bodyErr != nil {
-		return bodyErr
+
+	if strings.Contains(emailBodyTemplate, "<html>") {
+		contentType = ContentHTML
+	} else {
+		contentType = ContentPlain
 	}
 
-	if strings.Contains(body, "<html>") {
-		contentType = "text/html"
-		body = strings.Replace(body, "\n", "<br>", -1)
-	} else {
-		contentType = "text/plain"
+	body, bodyErr := resolveTemplate(emailBodyTemplate, event, contentType)
+	if bodyErr != nil {
+		return bodyErr
 	}
 
 	t := time.Now()
@@ -337,15 +350,33 @@ func sendEmail(event *corev2.Event) error {
 	return conn.Quit()
 }
 
-func resolveTemplate(templateValue string, event *corev2.Event) (string, error) {
-	var resolved bytes.Buffer
-	tmpl, err := template.New("test").Parse(templateValue)
+func resolveTemplate(templateValue string, event *corev2.Event, contentType string) (string, error) {
+	var (
+		resolved bytes.Buffer
+		tmpl     templater
+		err      error
+	)
+	if contentType == ContentHTML {
+		// parse using html/template
+		tmpl, err = htemplate.New("test").Parse(templateValue)
+	} else {
+		// default parse using text/template
+		tmpl, err = ttemplate.New("test").Parse(templateValue)
+	}
+
 	if err != nil {
 		return "", err
 	}
+
 	err = tmpl.Execute(&resolved, *event)
 	if err != nil {
 		return "", err
+	}
+
+	// \n replacement must be done after tmpl.Execute to catch
+	// template values
+	if contentType == ContentHTML {
+		return strings.Replace(resolved.String(), "\n", "<br>", -1), nil
 	}
 
 	return resolved.String(), nil
