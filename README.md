@@ -40,13 +40,13 @@ Flags:
   -u, --smtpUsername string       The SMTP username, if not in env SMTP_USERNAME
   -S, --subjectTemplate string    A template to use for the subject (default "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}")
   -k, --tlsSkipVerify             Do not verify TLS certificates
-  -t, --toEmail string            The 'to' email address
+  -t, --toEmail string            The 'to' email address (accepts comma delimited and/or multiple flags)
 ```
 ## Configuration
 
 ### Asset registration
 
-Assets are the best way to make use of this handler. If you're not using an asset, please consider doing so! If you're using sensuctl 5.13 or later, you can use the following command to add the asset: 
+Assets are the best way to make use of this handler. If you're not using an asset, please consider doing so! If you're using sensuctl 5.13 or later, you can use the following command to add the asset:
 
 `sensuctl asset add sensu/sensu-email-handler`
 
@@ -60,7 +60,7 @@ type: Asset
 api_version: core/v2
 metadata:
   name: sensu-email-handler_linux_amd64
-  labels: 
+  labels:
   annotations:
     io.sensu.bonsai.url: https://bonsai.sensu.io/assets/sensu/sensu-email-handler
     io.sensu.bonsai.api_url: https://bonsai.sensu.io/api/v1/assets/sensu/sensu-email-handler
@@ -88,7 +88,7 @@ metadata:
   name: email
 spec:
   type: pipe
-  command: sensu-email-handler -f from@example.com -t to@example.com -s smtp.example.com
+  command: sensu-email-handler -f from@example.com -t to@example.com -t "to2@example.com, to3@example.com" -s smtp.example.com
     -u user -p password
   timeout: 10
   filters:
@@ -158,7 +158,7 @@ Sensu
 </html>
 ```
 
-Note that this uses tokens to populate the values provided by the event. 
+Note that this uses tokens to populate the values provided by the event.
 
 Also note that line breaks in your template and any text surfaced by token substitution are replaced with the HTML &lt;br&gt; tag.
 
