@@ -281,7 +281,7 @@ func sendEmail(event *corev2.Event) error {
 		return subjectErr
 	}
 
-	if strings.Contains(emailBodyTemplate, "<html>") {
+	if strings.Contains(emailBodyTemplate, "<html") {
 		contentType = ContentHTML
 	} else {
 		contentType = ContentPlain
