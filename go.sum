@@ -198,6 +198,8 @@ github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR
 github.com/schollz/progressbar/v2 v2.13.2/go.mod h1:6YZjqdthH6SCZKv2rqGryrxPtfmRB/DWZxSMfCXPyD8=
 github.com/sensu-community/sensu-plugin-sdk v0.6.0 h1:ahYErlo3yfN7AlkkGX3TH1854hNXJ00MgUIW0sHaI3M=
 github.com/sensu-community/sensu-plugin-sdk v0.6.0/go.mod h1:Qkxx5GWZ99Hc5O6nZfBj4bNYjIDR8Qv2qobR3LSYAyA=
+github.com/sensu-community/sensu-plugin-sdk v0.6.1 h1:oTDWHUKxr2oQR/vc8AtyrqFdCVCwAgfgImtaSv4N98I=
+github.com/sensu-community/sensu-plugin-sdk v0.6.1/go.mod h1:Qkxx5GWZ99Hc5O6nZfBj4bNYjIDR8Qv2qobR3LSYAyA=
 github.com/sensu/lasr v1.2.1/go.mod h1:VIMtIK67Bcef6dTfctRCBg8EY9M9TtCY9NEFT6Zw5xQ=
 github.com/sensu/sensu-go v0.0.0-20190527184542-078f6253fcc7 h1:ay4EAXlKnJYWFSCrJxrQ4of32/vgCUi3G4CvAhY7jXg=
 github.com/sensu/sensu-go v0.0.0-20190527184542-078f6253fcc7/go.mod h1:oP0w1f0WSgVPzGUhK5EmM774W/JaWEpj4zg9Kd972y8=
