@@ -7,6 +7,9 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+- Updated sensu-plugin-sdk to v0.6.2
+
 ## [0.4.0] - 2020-02-12
 
 ### Fixed
