@@ -7,8 +7,26 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.2] - 2020-05-27
+
 ### Changed
 - Updated sensu-plugin-sdk to v0.6.2
+
+## [0.5.1] - 2020-03-25
+
+### Changed
+- Updated to use Go 1.14.x
+
+## [0.5.0] - 2020-03-25
+
+### Changed
+- Use html/template for html email body
+- Use a slice for -t (toEmail) to accept multiple recipients
+
+## [0.4.1] - 2020-02-12
+
+### Fixed
+- Make goreleaser use SHA512
 
 ## [0.4.0] - 2020-02-12
 
