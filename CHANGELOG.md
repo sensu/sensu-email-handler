@@ -7,6 +7,11 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.6.0] - 2020-05-27
+
+### Changed
+- Remove replacing newlines with HTML line breaks in HTML
+
 ## [0.5.2] - 2020-05-27
 
 ### Changed
