@@ -378,12 +378,6 @@ func resolveTemplate(templateValue string, event *corev2.Event, contentType stri
 		return "", err
 	}
 
-	// \n replacement must be done after tmpl.Execute to catch
-	// template values
-	if contentType == ContentHTML {
-		return strings.Replace(resolved.String(), "\n", "<br>", -1), nil
-	}
-
 	return resolved.String(), nil
 }
 
