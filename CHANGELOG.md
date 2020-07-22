@@ -7,6 +7,9 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- Add template function to allow formatting of event timestamps
+
 ## [0.6.0] - 2020-05-27
 
 ### Changed
