@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	corev2 "github.com/sensu/sensu-go/api/core/v2"
+	"github.com/stretchr/testify/assert"
 )
 
 var tcRcpts = []struct {
@@ -54,4 +54,3 @@ func TestResolveTemplate(t *testing.T) {
 	expected = fmt.Sprintf("<html>Entity: foo Check: bar Executed: %s</html>", executedFormatted)
 	assert.Equal(t, templout, expected)
 }
-
