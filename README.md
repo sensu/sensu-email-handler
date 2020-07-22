@@ -9,6 +9,7 @@
   - [Handler definition](#handler-definition)
 - [Annotations](#annotations)
 - [Templates](#templates)
+  - [Formatting Timestamps in Templates](#formatting-dates-in-templates)
 - [Installing from source and contributing](#installing-from-source-and-contributing)
 
 ## Overview
@@ -170,6 +171,28 @@ Hook Name:  {{.Name}}
 Hook Command:  {{.Command}}
 {{.Output}}
 ```
+#### Formatting Timestamps in Templates
+
+A Sensu Go event contains multiple timestamps (e.g. .Check.Issued,
+.Check.Executed, .Check.LastOk) that are presented in [UNIX timestamp][3]
+format.  A function named UnixTime is provided to print these values in a
+customizable human readable format as part of a template.  To customize the
+output format of the timestamp, use the same format as specified by Golang's
+[Time.Format][4].  Additional examples can be found [here][5].
+
+**Note:** the predefined format constants are **not** available.
+
+The example below embellishes the prior example template to include two
+timestamps.
+
+```
+[...]
+<h3>Check Output Details</h3>
+<b>Executed</b>: {{(UnixTime .Check.Executed).Format "2 Jan 2006 15:04:05"}}<br>
+<b>Last OK</b>: {{(UnixTime .Check.LastOK).Format "2 Jan 2006 15:04:05"}}<br>
+<b>Check Output</b>: {{.Check.Output}}
+[...]
+```
 
 ## Installing from source and contributing
 
@@ -185,3 +208,6 @@ For additional instructions, see [CONTRIBUTING](https://github.com/sensu/sensu-g
 
 [1]: https://github.com/sensu/sensu-email-handler/releases
 [2]: https://docs.sensu.io/sensu-go/latest/reference/handlers/#how-do-sensu-handlers-work
+[3]: https://en.wikipedia.org/wiki/Unix_time
+[4]: https://golang.org/pkg/time/#Time.Format
+[5]: https://yourbasic.org/golang/format-parse-string-time-date-example/

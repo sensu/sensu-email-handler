@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"testing"
+	"time"
 
+	corev2 "github.com/sensu/sensu-go/api/core/v2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -35,4 +37,20 @@ func TestNewRcpts(t *testing.T) {
 			assert.Equal(t, tc.expTo, fmt.Sprintf("To: %s", r), "receipients should be equal")
 		})
 	}
+}
+
+func TestResolveTemplate(t *testing.T) {
+	event := corev2.FixtureEvent("foo", "bar")
+	executed := time.Unix(event.Check.Executed, 0)
+	executedFormatted := executed.Format("2 Jan 2006 15:04:05")
+	template := "Entity: {{.Entity.Name}} Check: {{.Check.Name}} Executed: {{(UnixTime .Check.Executed).Format \"2 Jan 2006 15:04:05\"}}"
+	templout, err := resolveTemplate(template, event, "text/plain")
+	assert.NoError(t, err)
+	expected := fmt.Sprintf("Entity: foo Check: bar Executed: %s", executedFormatted)
+	assert.Equal(t, templout, expected)
+	template = "<html>Entity: {{.Entity.Name}} Check: {{.Check.Name}} Executed: {{(UnixTime .Check.Executed).Format \"2 Jan 2006 15:04:05\"}}</html>"
+	templout, err = resolveTemplate(template, event, "text/html")
+	assert.NoError(t, err)
+	expected = fmt.Sprintf("<html>Entity: foo Check: bar Executed: %s</html>", executedFormatted)
+	assert.Equal(t, templout, expected)
 }
