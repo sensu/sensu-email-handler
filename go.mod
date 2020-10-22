@@ -3,9 +3,7 @@ module github.com/sensu/sensu-email-handler
 go 1.13
 
 require (
-	github.com/golang/lint v0.0.0-20180702182130-06c8688daad7 // indirect
 	github.com/pelletier/go-toml v1.6.0 // indirect
-	github.com/robfig/cron v0.0.0-20171101201047-2315d5715e36 // indirect
 	github.com/sensu-community/sensu-plugin-sdk v0.10.1
 	github.com/sensu/sensu-go/api/core/v2 v2.3.0
 	github.com/spf13/afero v1.2.2 // indirect
