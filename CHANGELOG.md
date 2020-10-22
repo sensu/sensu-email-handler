@@ -7,6 +7,8 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.0] - 2020-10-22
+
 ### Unreleased
 - Updated Sensu SDK version
 - Updated Go version in go.mod
