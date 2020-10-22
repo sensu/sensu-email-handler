@@ -7,9 +7,14 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.1] - 2020-10-22
+
+### Changed
+- Removed darwin 386 from bonsai
+
 ## [0.8.0] - 2020-10-22
 
-### Unreleased
+### Changed
 - Updated Sensu SDK version
 - Updated Go version in go.mod
 - Updated sample event.json to include timestamp attribute
