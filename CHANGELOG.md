@@ -10,6 +10,7 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 ### Unreleased
 - Updated Sensu SDK version
 - Updated Go version in go.mod
+- Updated sample event.json to include timestamp attribute
 
 ## [0.7.0] - 2020-07-22
 
