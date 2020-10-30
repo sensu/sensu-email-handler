@@ -15,6 +15,7 @@ import (
 	ttemplate "text/template"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/sensu-community/sensu-plugin-sdk/sensu"
 	corev2 "github.com/sensu/sensu-go/api/core/v2"
 )
@@ -364,12 +365,14 @@ func resolveTemplate(templateValue string, event *corev2.Event, contentType stri
 	if contentType == ContentHTML {
 		// parse using html/template
 		tmpl, err = htemplate.New("test").Funcs(htemplate.FuncMap{
-			"UnixTime": func(i int64) time.Time { return time.Unix(i, 0) },
+			"UnixTime":      func(i int64) time.Time { return time.Unix(i, 0) },
+			"UUIDFromBytes": uuid.FromBytes,
 		}).Parse(templateValue)
 	} else {
 		// default parse using text/template
 		tmpl, err = ttemplate.New("test").Funcs(ttemplate.FuncMap{
-			"UnixTime": func(i int64) time.Time { return time.Unix(i, 0) },
+			"UnixTime":      func(i int64) time.Time { return time.Unix(i, 0) },
+			"UUIDFromBytes": uuid.FromBytes,
 		}).Parse(templateValue)
 	}
 
