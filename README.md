@@ -9,7 +9,8 @@
   - [Handler definition](#handler-definition)
 - [Annotations](#annotations)
 - [Templates](#templates)
-  - [Formatting Timestamps in Templates](#formatting-dates-in-templates)
+  - [Formatting Timestamps in Templates](#formatting-timestamps-in-templates)
+  - [Formatting the Event ID in Templates](#formatting-the-event-id-in-templates)
 - [Installing from source and contributing](#installing-from-source-and-contributing)
 
 ## Overview
@@ -192,6 +193,20 @@ timestamps.
 <b>Last OK</b>: {{(UnixTime .Check.LastOK).Format "2 Jan 2006 15:04:05"}}<br>
 <b>Check Output</b>: {{.Check.Output}}
 [...]
+```
+
+#### Formatting the Event ID in Templates
+
+Each Sensu Go event contains a unique event ID (UUID) that is presented to
+this handler in a non-printable format.  To properly print this value as
+part of a template, the function UUIDFromBytes is provided.  The example
+below shows its use:
+
+```
+[...]
+<b>Event ID</b>: {{UUIDFromBytes .ID}}
+<h3>Check Output Details</h3>
+<b>Check Output</b>: {{.Check.Output}}
 ```
 
 ## Installing from source and contributing

@@ -7,6 +7,12 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- Add template function to allow expansion of event ID
+
+### Changed
+- Updated included sample event to include event ID
+
 ## [0.8.1] - 2020-10-22
 
 ### Changed
