@@ -131,7 +131,7 @@ Example:
 
 ### Templates
 
-The plugin provides an option to use a template as for the body of the email and is capable of using HTML for formatting the email. An example is provided below:
+The plugin provides an option to use a template file for the body of the email and is capable of using HTML for formatting the email. This template file would need to be available on all backends on which this handler may run. An example is provided below:
 
 ```
 /etc/sensu/email_template
