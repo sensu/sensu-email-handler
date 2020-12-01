@@ -212,7 +212,7 @@ below shows its use:
 ## Installing from source and contributing
 
 Download the latest version of the sensu-email-handler from [releases][1],
-or create an executable script from this source.
+or create an executable from this source.
 
 From the local path of the sensu-email-handler repository:
 
