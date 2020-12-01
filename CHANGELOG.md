@@ -7,6 +7,9 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+- More template information in the README
+
 ## [0.9.0] - 2020-10-30
 
 ### Added
