@@ -160,7 +160,7 @@ Sensu<br>
 </html>
 ```
 
-Note that this uses tokens to populate the values provided by the event.
+Note that this uses tokens to populate the values provided by the event.  More information on template syntax and format can be found in [the documentation][6]
 
 Also note that line breaks in your template and any text surfaced by token substitution are replaced with the HTML &lt;br&gt; tag.
 
@@ -226,3 +226,4 @@ For additional instructions, see [CONTRIBUTING](https://github.com/sensu/sensu-g
 [3]: https://en.wikipedia.org/wiki/Unix_time
 [4]: https://golang.org/pkg/time/#Time.Format
 [5]: https://yourbasic.org/golang/format-parse-string-time-date-example/
+[6]: https://docs.sensu.io/sensu-go/latest/observability-pipeline/observe-process/handler-templates/
