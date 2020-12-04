@@ -131,7 +131,7 @@ Example:
 
 ### Templates
 
-The plugin provides an option to use a template as for the body of the email and is capable of using HTML for formatting the email. An example is provided below:
+The plugin provides an option to use a template file for the body of the email and is capable of using HTML for formatting the email. This template file would need to be available on all backends on which this handler may run. An example is provided below:
 
 ```
 /etc/sensu/email_template
@@ -160,7 +160,7 @@ Sensu<br>
 </html>
 ```
 
-Note that this uses tokens to populate the values provided by the event.
+Note that this uses tokens to populate the values provided by the event.  More information on template syntax and format can be found in [the documentation][6]
 
 Also note that line breaks in your template and any text surfaced by token substitution are replaced with the HTML &lt;br&gt; tag.
 
@@ -212,7 +212,7 @@ below shows its use:
 ## Installing from source and contributing
 
 Download the latest version of the sensu-email-handler from [releases][1],
-or create an executable script from this source.
+or create an executable from this source.
 
 From the local path of the sensu-email-handler repository:
 
@@ -226,3 +226,4 @@ For additional instructions, see [CONTRIBUTING](https://github.com/sensu/sensu-g
 [3]: https://en.wikipedia.org/wiki/Unix_time
 [4]: https://golang.org/pkg/time/#Time.Format
 [5]: https://yourbasic.org/golang/format-parse-string-time-date-example/
+[6]: https://docs.sensu.io/sensu-go/latest/observability-pipeline/observe-process/handler-templates/
