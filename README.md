@@ -11,6 +11,7 @@
 - [Templates](#templates)
   - [Formatting Timestamps in Templates](#formatting-timestamps-in-templates)
   - [Formatting the Event ID in Templates](#formatting-the-event-id-in-templates)
+- [Debugging](#debugging)
 - [Installing from source and contributing](#installing-from-source-and-contributing)
 
 ## Overview
@@ -207,6 +208,17 @@ below shows its use:
 <b>Event ID</b>: {{UUIDFromBytes .ID}}
 <h3>Check Output Details</h3>
 <b>Check Output</b>: {{.Check.Output}}
+```
+
+## Debugging
+
+It can be helpful to run from the command line to debug issues such as authentication. For this you will need an event. The command below assumes you are running this on a sensu backend.
+
+```
+sensuctl event info `hostname -f` keepalive --format=json | \
+  sensu-email-handler -f noreply@example.com \
+  -t youremail@example.com -s smtp.example.com \
+  -u smtp_username -p smtp_password -S 'testing'
 ```
 
 ## Installing from source and contributing
