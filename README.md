@@ -212,14 +212,15 @@ below shows its use:
 
 ## Debugging
 
-It can be helpful to run from the command line to debug issues such as authentication. For this you will need an event. The command below assumes you are running this on a sensu backend.
+It can be helpful to run from the command line to debug issues such as authentication. For this you will need two things. First you'll need to have the sensu-email-handler binary and sensuctl utility available locally. Second you will need a JSON representation of a Sensu event. You can obtain the JSON event representation using the sensuctl commandline utility. Here is a generalized example you can use to test with:  
 
 ```
-sensuctl event info `hostname -f` keepalive --format=json | \
+sensuctl event info sensu-entity keepalive --format=json | \
   sensu-email-handler -f noreply@example.com \
   -t youremail@example.com -s smtp.example.com \
   -u smtp_username -p smtp_password -S 'testing'
 ```
+You will need to ensure the details in the command are correct for your environment. Specifically you'll want to replace `sensu-entity` with the name of a known Sensu entity valid for your environment (Note: `sensuctl entity list` is helpful) 
 
 ## Installing from source and contributing
 
