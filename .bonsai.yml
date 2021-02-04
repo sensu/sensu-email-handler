@@ -46,5 +46,5 @@ builds:
   asset_filename: "#{repo}_#{version}_windows_amd64.tar.gz"
   sha_filename: "#{repo}_#{version}_sha512-checksums.txt"
   filter:
-  -  "entity.system.os == 'darwin'"
+  -  "entity.system.os == 'windows'"
   -  "entity.system.arch == 'amd64'"

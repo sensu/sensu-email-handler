@@ -3,14 +3,16 @@
 # Sensu Email Handler
 - [Overview](#overview)
 - [Usage examples](#usage-examples)
+  - [Help output](#help-output)
+  - [Environment variables](#environment-variables)
+  - [Annotations](#annotations)
+  - [Templates](#templates)
+    - [Formatting Timestamps in Templates](#formatting-timestamps-in-templates)
+    - [Formatting the Event ID in Templates](#formatting-the-event-id-in-templates)
 - [Configuration](#configuration)
   - [Asset registration](#asset-registration)
   - [Asset definition](#asset-definition)
   - [Handler definition](#handler-definition)
-- [Annotations](#annotations)
-- [Templates](#templates)
-  - [Formatting Timestamps in Templates](#formatting-timestamps-in-templates)
-  - [Formatting the Event ID in Templates](#formatting-the-event-id-in-templates)
 - [Debugging](#debugging)
 - [Installing from source and contributing](#installing-from-source-and-contributing)
 
@@ -19,9 +21,9 @@
 The Sensu Go Email Handler is a [Sensu Event Handler][2] for sending
 incident notification emails.
 
-## Usage Examples
+## Usage examples
 
-### Help
+### Help output
 
 ```
 The Sensu Email handler sends an email notifications
@@ -45,63 +47,33 @@ Flags:
   -k, --tlsSkipVerify             Do not verify TLS certificates
   -t, --toEmail string            The 'to' email address (accepts comma delimited and/or multiple flags)
 ```
-## Configuration
 
-### Asset registration
+### Environment variables
 
-Assets are the best way to make use of this handler. If you're not using an asset, please consider doing so! If you're using sensuctl 5.13 or later, you can use the following command to add the asset:
+|Argument       |Environment Variable |
+|---------------|---------------------|
+|--smtpUsername |SMTP_USERNAME        |
+|--smtpPassword |SMTP_PASSWORD        |
 
-`sensuctl asset add sensu/sensu-email-handler`
-
-If you're using an earlier version of sensuctl, you can download the asset definition from [this project's Bonsai Asset Index page](https://bonsai.sensu.io/assets/sensu/sensu-email-handler).
-
-### Asset definition
-
-```yml
----
-type: Asset
-api_version: core/v2
-metadata:
-  name: sensu-email-handler_linux_amd64
-  labels:
-  annotations:
-    io.sensu.bonsai.url: https://bonsai.sensu.io/assets/sensu/sensu-email-handler
-    io.sensu.bonsai.api_url: https://bonsai.sensu.io/api/v1/assets/sensu/sensu-email-handler
-    io.sensu.bonsai.tier: Supported
-    io.sensu.bonsai.version: 0.2.0
-    io.sensu.bonsai.namespace: sensu
-    io.sensu.bonsai.name: sensu-email-handler
-    io.sensu.bonsai.tags: handler
-spec:
-  url: https://assets.bonsai.sensu.io/45eaac0851501a19475a94016a4f8f9688a280f6/sensu-email-handler_0.2.0_linux_amd64.tar.gz
-  sha512: d69df76612b74acd64aef8eed2ae10d985f6073f9b014c8115b7896ed86786128c20249fd370f30672bf9a11b041a99adb05e3a23342d3ad80d0c346ec23a946
-  filters:
-  - entity.system.os == 'linux'
-  - entity.system.arch == 'amd64'
-```
-
-### Handler definition
+**Security Note:** Care should be taken to not expose the password for this handler by specifying it
+on the command line or by directly setting the environment variable in the handler definition.  It is
+suggested to make use of [secrets management][7] to surface it as an environment variable.  The
+handler definition above references it as a secret.  Below is an example secrets definition that make
+use of the built-in [env secrets provider][8].
 
 ```yml
 ---
-api_version: core/v2
-type: Handler
+type: Secret
+api_version: secrets/v1
 metadata:
-  namespace: default
-  name: email
+  name: smtp_password
 spec:
-  type: pipe
-  command: sensu-email-handler -f from@example.com -t to@example.com -t "to2@example.com, to3@example.com" -s smtp.example.com
-    -u user -p password
-  timeout: 10
-  filters:
-  - is_incident
-  - not_silenced
-  runtime_assets:
-  - sensu/sensu-email-handler
+  provider: env
+  id: SMTP_PASSWORD
 ```
 
 ### Annotations
+
 All of the above command line arguments can be overridden by check or entity annotations.
 The annotation consists of the key formed by appending the "long" argument specification
 to the string sensu.io/plugins/email/config (e.g. sensu.io/plugins/email/config/toEmail).
@@ -210,6 +182,62 @@ below shows its use:
 <b>Check Output</b>: {{.Check.Output}}
 ```
 
+## Configuration
+
+### Asset registration
+
+Assets are the best way to make use of this handler. If you're not using an asset, please consider doing so! If you're using sensuctl 5.13 or later, you can use the following command to add the asset:
+
+`sensuctl asset add sensu/sensu-email-handler`
+
+If you're using an earlier version of sensuctl, you can download the asset definition from [this project's Bonsai Asset Index page](https://bonsai.sensu.io/assets/sensu/sensu-email-handler).
+
+### Asset definition
+
+```yml
+---
+type: Asset
+api_version: core/v2
+metadata:
+  name: sensu-email-handler_linux_amd64
+  labels:
+  annotations:
+    io.sensu.bonsai.url: https://bonsai.sensu.io/assets/sensu/sensu-email-handler
+    io.sensu.bonsai.api_url: https://bonsai.sensu.io/api/v1/assets/sensu/sensu-email-handler
+    io.sensu.bonsai.tier: Supported
+    io.sensu.bonsai.version: 0.2.0
+    io.sensu.bonsai.namespace: sensu
+    io.sensu.bonsai.name: sensu-email-handler
+    io.sensu.bonsai.tags: handler
+spec:
+  url: https://assets.bonsai.sensu.io/45eaac0851501a19475a94016a4f8f9688a280f6/sensu-email-handler_0.2.0_linux_amd64.tar.gz
+  sha512: d69df76612b74acd64aef8eed2ae10d985f6073f9b014c8115b7896ed86786128c20249fd370f30672bf9a11b041a99adb05e3a23342d3ad80d0c346ec23a946
+  filters:
+  - entity.system.os == 'linux'
+  - entity.system.arch == 'amd64'
+```
+
+### Handler definition
+
+```yml
+---
+api_version: core/v2
+type: Handler
+metadata:
+  namespace: default
+  name: email
+spec:
+  type: pipe
+  command: sensu-email-handler -f from@example.com -t to@example.com -t "to2@example.com, to3@example.com" -s smtp.example.com
+    -u user -p password
+  timeout: 10
+  filters:
+  - is_incident
+  - not_silenced
+  runtime_assets:
+  - sensu/sensu-email-handler
+```
+
 ## Debugging
 
 It can be helpful to run from the command line to debug issues such as authentication. For this you will need two things. First you'll need to have the sensu-email-handler binary and sensuctl utility available locally. Second you will need a JSON representation of a Sensu event. You can obtain the JSON event representation using the sensuctl commandline utility. Here is a generalized example you can use to test with:  
@@ -240,3 +268,5 @@ For additional instructions, see [CONTRIBUTING](https://github.com/sensu/sensu-g
 [4]: https://golang.org/pkg/time/#Time.Format
 [5]: https://yourbasic.org/golang/format-parse-string-time-date-example/
 [6]: https://docs.sensu.io/sensu-go/latest/observability-pipeline/observe-process/handler-templates/
+[7]: https://docs.sensu.io/sensu-go/latest/guides/secrets-management/
+[8]: https://docs.sensu.io/sensu-go/latest/guides/secrets-management/#use-env-for-secrets-management
