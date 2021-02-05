@@ -9,6 +9,14 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ### Changed
 - More template information in the README
+- Q1 '21 handler maintenance:
+  - Updated GitHub Actions: Added Lint action
+  - Updated build to Go 1.14
+  - Added Secret: true to SMTP password
+  - Updated Bonsai to fix Windows amd64 build
+  - Added output log line for email sent
+  - Updated modules (go get -u && go mod tidy)
+  - README updates
 
 ## [0.9.0] - 2020-10-30
 

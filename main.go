@@ -118,6 +118,7 @@ var (
 			Argument:  smtpPassword,
 			Shorthand: "p",
 			Default:   "",
+			Secret:    true,
 			Usage:     "The SMTP password, if not in env SMTP_PASSWORD",
 			Value:     &config.SmtpPassword,
 		},
@@ -353,6 +354,8 @@ func sendEmail(event *corev2.Event) error {
 		return err
 	}
 
+	// FUTURE: send to AH
+	fmt.Printf("Email sent to %s\n", recipients.String())
 	return conn.Quit()
 }
 
