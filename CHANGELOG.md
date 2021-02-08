@@ -7,6 +7,8 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.0.0] - 2020-10-30
+
 ### Changed
 - More template information in the README
 - Q1 '21 handler maintenance:
