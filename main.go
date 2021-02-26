@@ -9,8 +9,10 @@ import (
 	"io"
 	"io/ioutil"
 	"math"
+	"net"
 	"net/mail"
 	"net/smtp"
+	"strconv"
 	"strings"
 	ttemplate "text/template"
 	"time"
@@ -277,7 +279,7 @@ func checkArgs(_ *corev2.Event) error {
 func sendEmail(event *corev2.Event) error {
 	var contentType string
 
-	smtpAddress := fmt.Sprintf("%s:%d", config.SmtpHost, config.SmtpPort)
+	smtpAddress := net.JoinHostPort(config.SmtpHost, strconv.FormatUint(config.SmtpPort, 10))
 	subject, subjectErr := resolveTemplate(config.SubjectTemplate, event, ContentPlain)
 	if subjectErr != nil {
 		return subjectErr

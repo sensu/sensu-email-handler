@@ -7,6 +7,9 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+- Use net.JoinHostPort instead of fmt.Sprintf for Host:Port to make semgrep happy
+
 ## [1.0.0] - 2020-10-30
 
 ### Changed
