@@ -235,6 +235,8 @@ github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg65j358z/aeFdxmN0P9QXhEzd20vsDc=
 github.com/sensu-community/sensu-plugin-sdk v0.11.0 h1:qkkteqfQx9pW7wbEZ7pk9w1OzqAmJSvXX1mpptibob0=
 github.com/sensu-community/sensu-plugin-sdk v0.11.0/go.mod h1:OMS/JgUcJRBbrojqJHoRW5fsWfsb3A+G9rVNgIgDrIM=
+github.com/sensu-community/sensu-plugin-sdk v0.12.0 h1:ROAfpNh1ovfMA7hX+6CA9kvboWUuHN3aaJx3knuJucc=
+github.com/sensu-community/sensu-plugin-sdk v0.12.0/go.mod h1:OMS/JgUcJRBbrojqJHoRW5fsWfsb3A+G9rVNgIgDrIM=
 github.com/sensu/sensu-go/api/core/v2 v2.0.0/go.mod h1:L+ZZ+QzsGTrNldiAdVrrQI/WIo31cq43YnEFt9T/6Pg=
 github.com/sensu/sensu-go/api/core/v2 v2.3.0 h1:7RrVfN4dvOMFsEOLotpvYD061s/fhicZQf4JaVoLgaI=
 github.com/sensu/sensu-go/api/core/v2 v2.3.0/go.mod h1:97IK4ZQuvVjWvvoLkp+NgrD6ot30WDRz3LEbFUc/N34=

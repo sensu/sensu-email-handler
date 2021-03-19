@@ -13,7 +13,7 @@ require (
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/robertkrimen/otto v0.0.0-20200922221731-ef014fd054ac // indirect
-	github.com/sensu-community/sensu-plugin-sdk v0.11.0
+	github.com/sensu-community/sensu-plugin-sdk v0.12.0
 	github.com/sensu/sensu-go/api/core/v2 v2.6.0
 	github.com/sensu/sensu-go/types v0.5.0 // indirect
 	github.com/sirupsen/logrus v1.7.0 // indirect
