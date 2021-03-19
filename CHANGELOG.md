@@ -7,8 +7,11 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.1.0] - 2021-03-18
+
 ### Changed
 - Use net.JoinHostPort instead of fmt.Sprintf for Host:Port to make semgrep happy
+- Updated Sensu Plugin SDK version (0.12)
 
 ## [1.0.0] - 2020-10-30
 
