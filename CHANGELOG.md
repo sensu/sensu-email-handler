@@ -7,6 +7,11 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.2.0] - 2021-04-16
+
+### Changed
+- Added sprig package to provide enhanced template functioning capabilities
+
 ## [1.1.0] - 2021-03-18
 
 ### Changed
