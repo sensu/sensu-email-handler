@@ -17,6 +17,7 @@ import (
 	ttemplate "text/template"
 	"time"
 
+	"github.com/Masterminds/sprig"
 	"github.com/google/uuid"
 	"github.com/sensu-community/sensu-plugin-sdk/sensu"
 	corev2 "github.com/sensu/sensu-go/api/core/v2"
@@ -367,18 +368,19 @@ func resolveTemplate(templateValue string, event *corev2.Event, contentType stri
 		tmpl     templater
 		err      error
 	)
+
 	if contentType == ContentHTML {
 		// parse using html/template
 		tmpl, err = htemplate.New("test").Funcs(htemplate.FuncMap{
 			"UnixTime":      func(i int64) time.Time { return time.Unix(i, 0) },
 			"UUIDFromBytes": uuid.FromBytes,
-		}).Parse(templateValue)
+		}).Funcs(sprig.HtmlFuncMap()).Parse(templateValue)
 	} else {
 		// default parse using text/template
 		tmpl, err = ttemplate.New("test").Funcs(ttemplate.FuncMap{
 			"UnixTime":      func(i int64) time.Time { return time.Unix(i, 0) },
 			"UUIDFromBytes": uuid.FromBytes,
-		}).Parse(templateValue)
+		}).Funcs(sprig.TxtFuncMap()).Parse(templateValue)
 	}
 
 	if err != nil {
