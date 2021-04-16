@@ -182,6 +182,26 @@ below shows its use:
 <b>Check Output</b>: {{.Check.Output}}
 ```
 
+#### Additional formatting via sprig module
+
+Additional functions have been added via the [sprig](https://github.com/Masterminds/sprig) module and examples can be found [here](https://masterminds.github.io/sprig/).
+
+This example splits a fully qualified entity name and provides the host. We also pull out the interval for the fatigue check if it exists. (index is a built-in golang template function) The div sprig function allows us to translate seconds into hours or minutes.  
+
+```
+[...]
+{{ $host := split "." .Entity.Name }}
+Frequency: {{ div .Check.Interval 60 }} minutes
+{{ if index .Check.Annotations "fatigue_check/interval" }}<b>Email Every</b>:  {{ div (index .Check.Annotations "fatigue_check/interval") 3600}} hour(s){{ end }}
+<b>Check Output</b>: {{.Check.Output}}
+[...]
+```
+
+Exmaple of adding the first line of the output to subject.
+```
+-S {{ $out := split "\n" .Check.Output -}}Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{ $out._0 }}
+```
+
 ## Configuration
 
 ### Asset registration
@@ -248,7 +268,7 @@ sensuctl event info sensu-entity keepalive --format=json | \
   -t youremail@example.com -s smtp.example.com \
   -u smtp_username -p smtp_password -S 'testing'
 ```
-You will need to ensure the details in the command are correct for your environment. Specifically you'll want to replace `sensu-entity` with the name of a known Sensu entity valid for your environment (Note: `sensuctl entity list` is helpful) 
+You will need to ensure the details in the command are correct for your environment. Specifically you'll want to replace `sensu-entity` with the name of a known Sensu entity valid for your environment (Note: `sensuctl entity list` is helpful)
 
 ## Installing from source and contributing
 

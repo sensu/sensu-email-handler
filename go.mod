@@ -3,13 +3,19 @@ module github.com/sensu/sensu-email-handler
 go 1.14
 
 require (
+	github.com/Masterminds/goutils v1.1.1 // indirect
+	github.com/Masterminds/semver v1.5.0 // indirect
+	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/coreos/etcd v3.3.25+incompatible // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/uuid v1.2.0
+	github.com/huandu/xstrings v1.3.2 // indirect
+	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/magiconair/properties v1.8.4 // indirect
+	github.com/mitchellh/copystructure v1.1.2 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/robertkrimen/otto v0.0.0-20200922221731-ef014fd054ac // indirect
