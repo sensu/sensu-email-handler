@@ -22,6 +22,7 @@ require (
 	github.com/sensu-community/sensu-plugin-sdk v0.12.0
 	github.com/sensu/sensu-go/api/core/v2 v2.6.0
 	github.com/sensu/sensu-go/types v0.5.0 // indirect
+	github.com/sensu/sensu-plugin-sdk v0.13.0
 	github.com/sirupsen/logrus v1.7.0 // indirect
 	github.com/spf13/afero v1.5.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect

@@ -7,6 +7,11 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.2.1] - 2021-04-22
+### Fixed
+- Updated to latest sensu-plugin-sdk to workaround issue with agent config file forcing downcasing of agent annotations.
+  Now downcased annotatation path for email handler configuration will be checked as a fallback if preferred camelcased keys are not present. 
+
 ## [1.2.0] - 2021-04-16
 
 ### Changed

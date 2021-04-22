@@ -266,6 +266,8 @@ github.com/sensu/sensu-go/types v0.5.0 h1:kacQ8s1ZlcL3bhsrrrzfXEgjHVxDHPRdhQbH6G
 github.com/sensu/sensu-go/types v0.5.0/go.mod h1:6fm9bQwqD4TurVso5f2Z78sULQykybn8LyCQ3mv20a4=
 github.com/sensu/sensu-licensing v0.1.2 h1:EEZxvbj/pmCCfD4ePAzs9mb6k6IPRDbUJcwAOfSvuUc=
 github.com/sensu/sensu-licensing v0.1.2/go.mod h1:Xfs4do2c3U+VvuNCjthUH7QJOZ9o6NfbQSb7rrvSXGc=
+github.com/sensu/sensu-plugin-sdk v0.13.0 h1:EyGSsB0q/7ZuC7bHKO9bv5ZFrZVaeLn/3kqM//QC3bU=
+github.com/sensu/sensu-plugin-sdk v0.13.0/go.mod h1:u2jA117jxNAkjDZrPkhD4+6TnCPAXKMvDntp5LJHi3k=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.6.0 h1:UBcNElsrwanuuMsnGSlYmtmgbb23qDR5dG+6X6Oo89I=

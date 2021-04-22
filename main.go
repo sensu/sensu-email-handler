@@ -19,8 +19,8 @@ import (
 
 	"github.com/Masterminds/sprig"
 	"github.com/google/uuid"
-	"github.com/sensu-community/sensu-plugin-sdk/sensu"
 	corev2 "github.com/sensu/sensu-go/api/core/v2"
+	"github.com/sensu/sensu-plugin-sdk/sensu"
 )
 
 //HandlerConfig config options for email handler.
