@@ -36,7 +36,6 @@ Flags:
   -T, --bodyTemplateFile string   A template file to use for the body
   -l, --enableLoginAuth           [deprecated] Use "login auth" mechanisim
   -f, --fromEmail string          The 'from' email address
-  -h, --help                      help for sensu-email-handler
   -H, --hookout                   Include output from check hook(s)
   -i, --insecure                  [deprecated] Use an insecure connection (unauthenticated on port 25)
   -s, --smtpHost string           The SMTP host to use to send to send email
@@ -46,6 +45,8 @@ Flags:
   -S, --subjectTemplate string    A template to use for the subject (default "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}")
   -k, --tlsSkipVerify             Do not verify TLS certificates
   -t, --toEmail string            The 'to' email address (accepts comma delimited and/or multiple flags)
+  -n  --dry-run                   Dry run for testing, do not connect to smtp server
+  -h, --help                      help for sensu-email-handler
 ```
 
 ### Environment variables

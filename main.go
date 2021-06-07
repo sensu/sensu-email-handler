@@ -38,6 +38,7 @@ type HandlerConfig struct {
 	Hookout          bool
 	BodyTemplateFile string
 	SubjectTemplate  string
+	DryRun           bool
 
 	// deprecated options
 	Insecure  bool
@@ -189,6 +190,14 @@ var (
 			Usage:     "A template to use for the subject",
 			Value:     &config.SubjectTemplate,
 		},
+		{
+			Path:      "dry-run",
+			Argument:  "dry-run",
+			Shorthand: "n",
+			Default:   false,
+			Usage:     "Dry run for testing, do not connect to smtp server",
+			Value:     &config.DryRun,
+		},
 
 		// deprecated options
 		{
@@ -316,50 +325,53 @@ func sendEmail(event *corev2.Event) error {
 	case AuthMethodLogin:
 		auth = LoginAuth(config.SmtpUsername, config.SmtpPassword)
 	}
-
-	conn, err := smtp.Dial(smtpAddress)
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-
-	if ok, _ := conn.Extension("STARTTLS"); ok {
-		tlsConfig := &tls.Config{
-			ServerName:         config.SmtpHost,
-			InsecureSkipVerify: config.TLSSkipVerify,
-		}
-		if err := conn.StartTLS(tlsConfig); err != nil {
+	if !config.DryRun {
+		fmt.Printf("Dry-run:\n Msg:\n%s\n", msg)
+		return nil
+	} else {
+		conn, err := smtp.Dial(smtpAddress)
+		if err != nil {
 			return err
 		}
-	}
+		defer conn.Close()
 
-	if ok, _ := conn.Extension("AUTH"); ok && auth != nil {
-		if err := conn.Auth(auth); err != nil {
+		if ok, _ := conn.Extension("STARTTLS"); ok {
+			tlsConfig := &tls.Config{
+				ServerName:         config.SmtpHost,
+				InsecureSkipVerify: config.TLSSkipVerify,
+			}
+			if err := conn.StartTLS(tlsConfig); err != nil {
+				return err
+			}
+		}
+
+		if ok, _ := conn.Extension("AUTH"); ok && auth != nil {
+			if err := conn.Auth(auth); err != nil {
+				return err
+			}
+		}
+
+		if err := conn.Mail(config.FromEmail); err != nil {
 			return err
 		}
-	}
+		if err := recipients.rcpt(conn); err != nil {
+			return err
+		}
 
-	if err := conn.Mail(config.FromEmail); err != nil {
-		return err
+		data, err := conn.Data()
+		if err != nil {
+			return err
+		}
+		if _, err := data.Write(msg); err != nil {
+			return err
+		}
+		if err := data.Close(); err != nil {
+			return err
+		}
+		fmt.Printf("Email sent to %s\n", recipients.String())
+		return conn.Quit()
 	}
-	if err := recipients.rcpt(conn); err != nil {
-		return err
-	}
-
-	data, err := conn.Data()
-	if err != nil {
-		return err
-	}
-	if _, err := data.Write(msg); err != nil {
-		return err
-	}
-	if err := data.Close(); err != nil {
-		return err
-	}
-
 	// FUTURE: send to AH
-	fmt.Printf("Email sent to %s\n", recipients.String())
-	return conn.Quit()
 }
 
 func resolveTemplate(templateValue string, event *corev2.Event, contentType string) (string, error) {
