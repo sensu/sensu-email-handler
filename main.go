@@ -9,15 +9,18 @@ import (
 	"io"
 	"io/ioutil"
 	"math"
+	"net"
 	"net/mail"
 	"net/smtp"
+	"strconv"
 	"strings"
 	ttemplate "text/template"
 	"time"
 
+	"github.com/Masterminds/sprig"
 	"github.com/google/uuid"
-	"github.com/sensu-community/sensu-plugin-sdk/sensu"
 	corev2 "github.com/sensu/sensu-go/api/core/v2"
+	"github.com/sensu/sensu-plugin-sdk/sensu"
 )
 
 //HandlerConfig config options for email handler.
@@ -118,6 +121,7 @@ var (
 			Argument:  smtpPassword,
 			Shorthand: "p",
 			Default:   "",
+			Secret:    true,
 			Usage:     "The SMTP password, if not in env SMTP_PASSWORD",
 			Value:     &config.SmtpPassword,
 		},
@@ -276,7 +280,7 @@ func checkArgs(_ *corev2.Event) error {
 func sendEmail(event *corev2.Event) error {
 	var contentType string
 
-	smtpAddress := fmt.Sprintf("%s:%d", config.SmtpHost, config.SmtpPort)
+	smtpAddress := net.JoinHostPort(config.SmtpHost, strconv.FormatUint(config.SmtpPort, 10))
 	subject, subjectErr := resolveTemplate(config.SubjectTemplate, event, ContentPlain)
 	if subjectErr != nil {
 		return subjectErr
@@ -353,6 +357,8 @@ func sendEmail(event *corev2.Event) error {
 		return err
 	}
 
+	// FUTURE: send to AH
+	fmt.Printf("Email sent to %s\n", recipients.String())
 	return conn.Quit()
 }
 
@@ -362,6 +368,7 @@ func resolveTemplate(templateValue string, event *corev2.Event, contentType stri
 		tmpl     templater
 		err      error
 	)
+
 	if contentType == ContentHTML {
 		// parse using html/template
 		tmpl, err = htemplate.New("test").Funcs(htemplate.FuncMap{
@@ -382,7 +389,7 @@ func resolveTemplate(templateValue string, event *corev2.Event, contentType stri
 			},
 			"UnixTime":      func(i int64) time.Time { return time.Unix(i, 0) },
 			"UUIDFromBytes": uuid.FromBytes,
-		}).Parse(templateValue)
+		}).Funcs(sprig.HtmlFuncMap()).Parse(templateValue)
 	} else {
 		// default parse using text/template
 		tmpl, err = ttemplate.New("test").Funcs(ttemplate.FuncMap{
@@ -401,7 +408,7 @@ func resolveTemplate(templateValue string, event *corev2.Event, contentType stri
 			},
 			"UnixTime":      func(i int64) time.Time { return time.Unix(i, 0) },
 			"UUIDFromBytes": uuid.FromBytes,
-		}).Parse(templateValue)
+		}).Funcs(sprig.TxtFuncMap()).Parse(templateValue)
 	}
 
 	if err != nil {

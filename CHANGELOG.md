@@ -7,8 +7,34 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.2.1] - 2021-04-22
+### Fixed
+- Updated to latest sensu-plugin-sdk to workaround issue with agent config file forcing downcasing of agent annotations.
+  Now downcased annotatation path for email handler configuration will be checked as a fallback if preferred camelcased keys are not present. 
+
+## [1.2.0] - 2021-04-16
+
+### Changed
+- Added sprig package to provide enhanced template functioning capabilities
+
+## [1.1.0] - 2021-03-18
+
+### Changed
+- Use net.JoinHostPort instead of fmt.Sprintf for Host:Port to make semgrep happy
+- Updated Sensu Plugin SDK version (0.12)
+
+## [1.0.0] - 2020-10-30
+
 ### Changed
 - More template information in the README
+- Q1 '21 handler maintenance:
+  - Updated GitHub Actions: Added Lint action
+  - Updated build to Go 1.14
+  - Added Secret: true to SMTP password
+  - Updated Bonsai to fix Windows amd64 build
+  - Added output log line for email sent
+  - Updated modules (go get -u && go mod tidy)
+  - README updates
 
 ## [0.9.0] - 2020-10-30
 

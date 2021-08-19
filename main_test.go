@@ -43,11 +43,13 @@ func TestResolveTemplate(t *testing.T) {
 	event := corev2.FixtureEvent("foo", "bar")
 	executed := time.Unix(event.Check.Executed, 0)
 	executedFormatted := executed.Format("2 Jan 2006 15:04:05")
+
 	template := "Entity: {{.Entity.Name}} Check: {{.Check.Name}} Executed: {{(UnixTime .Check.Executed).Format \"2 Jan 2006 15:04:05\"}}"
 	templout, err := resolveTemplate(template, event, "text/plain")
 	assert.NoError(t, err)
 	expected := fmt.Sprintf("Entity: foo Check: bar Executed: %s", executedFormatted)
 	assert.Equal(t, expected, templout)
+
 	template = "<html>Entity: {{.Entity.Name}} Check: {{.Check.Name}} Executed: {{(UnixTime .Check.Executed).Format \"2 Jan 2006 15:04:05\"}}</html>"
 	templout, err = resolveTemplate(template, event, "text/html")
 	assert.NoError(t, err)
@@ -59,4 +61,22 @@ func TestResolveTemplate(t *testing.T) {
 	assert.NoError(t, err)
 	expected = fmt.Sprintf("<html>Entity: foo Check: bar Output: Test Unix newline<br>Second Line<br></html>")
 	assert.Equal(t, expected, templout)
+
+	t.Run("sprig_func", func(t *testing.T) {
+		event2 := corev2.FixtureEvent("super.foo", " bar ")
+		event2.Check.Interval = 600
+
+		template = `<html>Entity: {{.Entity.Name | upper | trimPrefix "S"}} Check: {{trim .Check.Name}} Executed: {{(UnixTime .Check.Executed).Format "2 Jan 2006 15:04:05"}}</html>`
+		templout, err = resolveTemplate(template, event2, "text/plain")
+		assert.NoError(t, err)
+		expected = fmt.Sprintf("<html>Entity: UPER.FOO Check: bar Executed: %s</html>", executedFormatted)
+		assert.Equal(t, expected, templout)
+
+		template = `{{ $host := split "." .Entity.Name}}<html>Entity: {{ $host._0 | upper }} Check: {{trim .Check.Name}} Executed: {{(UnixTime .Check.Executed).Format "2 Jan 2006 15:04:05"}} Interval: {{ div .Check.Interval 60 }} minutes</html>`
+		templout, err = resolveTemplate(template, event2, "text/html")
+		assert.NoError(t, err)
+		expected = fmt.Sprintf("<html>Entity: SUPER Check: bar Executed: %s Interval: 10 minutes</html>", executedFormatted)
+		assert.Equal(t, expected, templout)
+	})
+
 }
