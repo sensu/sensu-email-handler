@@ -119,7 +119,7 @@ Greetings,
 <b>Occurrences</b>: {{ .Check.Occurrences }}<br>
 <b>Playbook</b>: https://example.com/monitoring/wiki/playbook
 <h3>Check Output Details</h3>
-<b>Check Output</b>: {{.Check.Output}}
+<b>Check Output</b>:<br>{{range $element := StringLines .Check.Output}}{{$element}}<br>{{end}} 
 <h4>Check Hook(s)</h4>
 {{range .Check.Hooks}}<b>Hook Name</b>:  {{.Name}}<br>
 <b>Hook Command</b>:  {{.Command}}<br>
@@ -193,7 +193,7 @@ This example splits a fully qualified entity name and provides the host. We also
 {{ $host := split "." .Entity.Name }}
 Frequency: {{ div .Check.Interval 60 }} minutes
 {{ if index .Check.Annotations "fatigue_check/interval" }}<b>Email Every</b>:  {{ div (index .Check.Annotations "fatigue_check/interval") 3600}} hour(s){{ end }}
-<b>Check Output</b>: {{.Check.Output}}
+<b>Check Output</b>:<br>{{range $element := StringLines .Check.Output}}{{$element}}<br>{{end}} 
 [...]
 ```
 

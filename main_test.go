@@ -39,6 +39,14 @@ func TestNewRcpts(t *testing.T) {
 	}
 }
 
+func TestStringLines(t *testing.T) {
+	lines, err := StringLines("Line1\nLine2")
+	assert.Equal(t, 2, len(lines))
+	assert.NoError(t, err)
+	lines, err = StringLines("Line1\r\nLine2\r\nLine3")
+	assert.Equal(t, 3, len(lines))
+	assert.NoError(t, err)
+}
 func TestResolveTemplate(t *testing.T) {
 	event := corev2.FixtureEvent("foo", "bar")
 	executed := time.Unix(event.Check.Executed, 0)
@@ -55,9 +63,17 @@ func TestResolveTemplate(t *testing.T) {
 	assert.NoError(t, err)
 	expected = fmt.Sprintf("<html>Entity: foo Check: bar Executed: %s</html>", executedFormatted)
 	assert.Equal(t, expected, templout)
+	event.Check.Output = "Test Unix newline\nSecond Line"
+	template = "<html>Entity: {{.Entity.Name}} Check: {{.Check.Name}} Output: {{range $element := StringLines .Check.Output}}{{$element}}<br>{{end}}</html>"
+	templout, err = resolveTemplate(template, event, "text/html")
+	assert.NoError(t, err)
+	expected = "<html>Entity: foo Check: bar Output: Test Unix newline<br>Second Line<br></html>"
+	assert.Equal(t, expected, templout)
 
 	t.Run("sprig_func", func(t *testing.T) {
 		event2 := corev2.FixtureEvent("super.foo", " bar ")
+		executed := time.Unix(event.Check.Executed, 0)
+		executedFormatted := executed.Format("2 Jan 2006 15:04:05")
 		event2.Check.Interval = 600
 
 		template = `<html>Entity: {{.Entity.Name | upper | trimPrefix "S"}} Check: {{trim .Check.Name}} Executed: {{(UnixTime .Check.Executed).Format "2 Jan 2006 15:04:05"}}</html>`

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"crypto/tls"
 	"errors"
@@ -362,6 +363,17 @@ func sendEmail(event *corev2.Event) error {
 	return conn.Quit()
 }
 
+func StringLines(s string) ([]string, error) {
+	var lines []string
+	scanner := bufio.NewScanner(strings.NewReader(s))
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	err := scanner.Err()
+	return lines, err
+
+}
+
 func resolveTemplate(templateValue string, event *corev2.Event, contentType string) (string, error) {
 	var (
 		resolved bytes.Buffer
@@ -372,12 +384,16 @@ func resolveTemplate(templateValue string, event *corev2.Event, contentType stri
 	if contentType == ContentHTML {
 		// parse using html/template
 		tmpl, err = htemplate.New("test").Funcs(htemplate.FuncMap{
+			// function lets change text line breaks with html line breakss
+			// to ensure event Check.Output is ready
+			"StringLines":   StringLines,
 			"UnixTime":      func(i int64) time.Time { return time.Unix(i, 0) },
 			"UUIDFromBytes": uuid.FromBytes,
 		}).Funcs(sprig.HtmlFuncMap()).Parse(templateValue)
 	} else {
 		// default parse using text/template
 		tmpl, err = ttemplate.New("test").Funcs(ttemplate.FuncMap{
+			"StringLines":   StringLines,
 			"UnixTime":      func(i int64) time.Time { return time.Unix(i, 0) },
 			"UUIDFromBytes": uuid.FromBytes,
 		}).Funcs(sprig.TxtFuncMap()).Parse(templateValue)
