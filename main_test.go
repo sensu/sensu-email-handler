@@ -59,7 +59,7 @@ func TestResolveTemplate(t *testing.T) {
 	template = "<html>Entity: {{.Entity.Name}} Check: {{.Check.Name}} Output: {{range $element := StringLines .Check.Output}}{{$element}}<br>{{end}}</html>"
 	templout, err = resolveTemplate(template, event, "text/html")
 	assert.NoError(t, err)
-	expected = fmt.Sprintf("<html>Entity: foo Check: bar Output: Test Unix newline<br>Second Line<br></html>")
+	expected = "<html>Entity: foo Check: bar Output: Test Unix newline<br>Second Line<br></html>"
 	assert.Equal(t, expected, templout)
 
 	t.Run("sprig_func", func(t *testing.T) {
