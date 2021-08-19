@@ -7,6 +7,12 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.2.2] - 2021-08-19
+
+### Fixed
+- Add StringLines helper template function and README example to make it possible to correctly format multi-line check output 
+for html email body using golang template language.
+
 ## [1.2.1] - 2021-04-22
 ### Fixed
 - Updated to latest sensu-plugin-sdk to workaround issue with agent config file forcing downcasing of agent annotations.
