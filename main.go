@@ -365,12 +365,40 @@ func resolveTemplate(templateValue string, event *corev2.Event, contentType stri
 	if contentType == ContentHTML {
 		// parse using html/template
 		tmpl, err = htemplate.New("test").Funcs(htemplate.FuncMap{
+			// function lets change text line breaks with html line breakss
+			// to ensure event Check.Output is ready
+			"StringLines": func(s string) []string {
+				// Unix line breaks
+				lines := strings.Split(s, `\r\n`)
+				if len(lines) == 1 {
+					// DOS line breaks
+					lines = strings.Split(s, `\n`)
+				}
+				if len(lines) == 1 {
+					// Mac line breaks
+					lines = strings.Split(s, `\r`)
+				}
+				return lines
+			},
 			"UnixTime":      func(i int64) time.Time { return time.Unix(i, 0) },
 			"UUIDFromBytes": uuid.FromBytes,
 		}).Parse(templateValue)
 	} else {
 		// default parse using text/template
 		tmpl, err = ttemplate.New("test").Funcs(ttemplate.FuncMap{
+			"StringLines": func(s string) []string {
+				// Unix line breaks
+				lines := strings.Split(s, `\r\n`)
+				if len(lines) == 1 {
+					// DOS line breaks
+					lines = strings.Split(s, `\n`)
+				}
+				if len(lines) == 1 {
+					// Mac line breaks
+					lines = strings.Split(s, `\r`)
+				}
+				return lines
+			},
 			"UnixTime":      func(i int64) time.Time { return time.Unix(i, 0) },
 			"UUIDFromBytes": uuid.FromBytes,
 		}).Parse(templateValue)

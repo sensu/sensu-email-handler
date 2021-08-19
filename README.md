@@ -147,7 +147,7 @@ Greetings,
 <b>Occurrences</b>: {{ .Check.Occurrences }}<br>
 <b>Playbook</b>: https://example.com/monitoring/wiki/playbook
 <h3>Check Output Details</h3>
-<b>Check Output</b>: {{.Check.Output}}
+<b>Check Output</b>:<br>{{range $element := StringLines .Check.Output}}{{$element}}<br>{{end}} 
 <h4>Check Hook(s)</h4>
 {{range .Check.Hooks}}<b>Hook Name</b>:  {{.Name}}<br>
 <b>Hook Command</b>:  {{.Command}}<br>
@@ -208,6 +208,15 @@ below shows its use:
 <b>Event ID</b>: {{UUIDFromBytes .ID}}
 <h3>Check Output Details</h3>
 <b>Check Output</b>: {{.Check.Output}}
+```
+
+#### HTML Formatting Multiple Line Check Output
+
+The golang html templating engine will by default strip out newlines from multi-line text strings.  
+Using the `StringLines` function to split the string element in question into a string array, so each item in the array can be processed separately making sure each element has the correct html syntax you require.  The example below shows how to split the multi-line Check.Output string into an array and then add the html line break element as pfor each line:
+
+```
+<b>Check Output</b>:<br>{{range $element := StringLines .Check.Output}}{{$element}}<br>{{end}} 
 ```
 
 ## Debugging

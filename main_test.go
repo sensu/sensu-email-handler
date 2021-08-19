@@ -47,10 +47,16 @@ func TestResolveTemplate(t *testing.T) {
 	templout, err := resolveTemplate(template, event, "text/plain")
 	assert.NoError(t, err)
 	expected := fmt.Sprintf("Entity: foo Check: bar Executed: %s", executedFormatted)
-	assert.Equal(t, templout, expected)
+	assert.Equal(t, expected, templout)
 	template = "<html>Entity: {{.Entity.Name}} Check: {{.Check.Name}} Executed: {{(UnixTime .Check.Executed).Format \"2 Jan 2006 15:04:05\"}}</html>"
 	templout, err = resolveTemplate(template, event, "text/html")
 	assert.NoError(t, err)
 	expected = fmt.Sprintf("<html>Entity: foo Check: bar Executed: %s</html>", executedFormatted)
-	assert.Equal(t, templout, expected)
+	assert.Equal(t, expected, templout)
+	event.Check.Output = `Test Unix newline\nSecond Line`
+	template = "<html>Entity: {{.Entity.Name}} Check: {{.Check.Name}} Output: {{range $element := StringLines .Check.Output}}{{$element}}<br>{{end}}</html>"
+	templout, err = resolveTemplate(template, event, "text/html")
+	assert.NoError(t, err)
+	expected = fmt.Sprintf("<html>Entity: foo Check: bar Output: Test Unix newline<br>Second Line<br></html>")
+	assert.Equal(t, expected, templout)
 }

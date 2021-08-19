@@ -3,6 +3,7 @@ module github.com/sensu/sensu-email-handler
 go 1.13
 
 require (
+	github.com/google/uuid v1.1.1
 	github.com/pelletier/go-toml v1.6.0 // indirect
 	github.com/sensu-community/sensu-plugin-sdk v0.10.1
 	github.com/sensu/sensu-go/api/core/v2 v2.3.0
