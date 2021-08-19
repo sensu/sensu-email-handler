@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"crypto/tls"
 	"errors"
@@ -394,15 +395,10 @@ func resolveTemplate(templateValue string, event *corev2.Event, contentType stri
 		// default parse using text/template
 		tmpl, err = ttemplate.New("test").Funcs(ttemplate.FuncMap{
 			"StringLines": func(s string) []string {
-				// Unix line breaks
-				lines := strings.Split(s, `\r\n`)
-				if len(lines) == 1 {
-					// DOS line breaks
-					lines = strings.Split(s, `\n`)
-				}
-				if len(lines) == 1 {
-					// Mac line breaks
-					lines = strings.Split(s, `\r`)
+				var lines []string
+				scanner := bufio.NewScanner(strings.NewReader(s))
+				for scanner.Scan() {
+					lines = append(lines, scanner.Text())
 				}
 				return lines
 			},
