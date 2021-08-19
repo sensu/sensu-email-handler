@@ -72,6 +72,8 @@ func TestResolveTemplate(t *testing.T) {
 
 	t.Run("sprig_func", func(t *testing.T) {
 		event2 := corev2.FixtureEvent("super.foo", " bar ")
+		executed := time.Unix(event.Check.Executed, 0)
+		executedFormatted := executed.Format("2 Jan 2006 15:04:05")
 		event2.Check.Interval = 600
 
 		template = `<html>Entity: {{.Entity.Name | upper | trimPrefix "S"}} Check: {{trim .Check.Name}} Executed: {{(UnixTime .Check.Executed).Format "2 Jan 2006 15:04:05"}}</html>`
