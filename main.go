@@ -299,11 +299,15 @@ func sendEmail(event *corev2.Event) error {
 	}
 
 	recipients := newRcpts(config.ToEmail)
+	recipientsRes, recipientsErr := resolveTemplate(recipients.String(), event, ContentPlain)
+	if recipientsErr != nil {
+		return recipientsErr
+	}
 
 	t := time.Now()
 
 	msg := []byte("From: " + config.FromHeader + "\r\n" +
-		"To: " + recipients.String() + "\r\n" +
+		"To: " + recipientsRes + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"Date: " + t.Format(time.RFC1123Z) + "\r\n" +
 		"Content-Type: " + contentType + "\r\n" +
