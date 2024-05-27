@@ -8,11 +8,11 @@ import (
 	"fmt"
 	htemplate "html/template"
 	"io"
-	"io/ioutil"
 	"math"
 	"net"
 	"net/mail"
 	"net/smtp"
+	"os"
 	"strconv"
 	"strings"
 	ttemplate "text/template"
@@ -24,7 +24,7 @@ import (
 	"github.com/sensu/sensu-plugin-sdk/sensu"
 )
 
-//HandlerConfig config options for email handler.
+// HandlerConfig config options for email handler.
 type HandlerConfig struct {
 	sensu.PluginConfig
 	SmtpHost         string
@@ -262,7 +262,7 @@ func checkArgs(_ *corev2.Event) error {
 	if config.Hookout {
 		emailBodyTemplate = "{{.Check.Output}}\n{{range .Check.Hooks}}Hook Name:  {{.Name}}\nHook Command:  {{.Command}}\n\n{{.Output}}\n\n{{end}}"
 	} else if len(config.BodyTemplateFile) > 0 {
-		templateBytes, fileErr := ioutil.ReadFile(config.BodyTemplateFile)
+		templateBytes, fileErr := os.ReadFile(config.BodyTemplateFile)
 		if fileErr != nil {
 			return fmt.Errorf("failed to read specified template file %s", config.BodyTemplateFile)
 		}
@@ -411,7 +411,7 @@ func resolveTemplate(templateValue string, event *corev2.Event, contentType stri
 	return resolved.String(), nil
 }
 
-//newRcpts trims "spaces" and checks each toEmails for commas.
+// newRcpts trims "spaces" and checks each toEmails for commas.
 // Any additional rcpts via commas appends to the end.
 func newRcpts(toEmails []string) rcpts {
 	tos := make([]string, len(toEmails))
