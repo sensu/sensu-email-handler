@@ -11,6 +11,10 @@ jobs:
         os: [ubuntu-latest]
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
+    - name: Setup Go 1.22.x
+      uses: actions/setup-go@v5
+      with:
+          go-version: 1.22.x
     - name: Run golangci-lint
-      uses: golangci/golangci-lint-action@v2
+      uses: golangci/golangci-lint-action@v6
