@@ -12,7 +12,6 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
-	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/magiconair/properties v1.8.4 // indirect
 	github.com/mitchellh/copystructure v1.1.2 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
@@ -28,9 +27,9 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.7.1 // indirect
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/net v0.24.0 //indirect
-	golang.org/x/sys v0.20.0 //indirect
-	google.golang.org/grpc v1.56.3 // indirect
+	golang.org/x/net v0.26.0 //indirect
+	golang.org/x/sys v0.21.0 //indirect
+	google.golang.org/grpc v1.64.0 // indirect
 	google.golang.org/protobuf v1.34.0 //indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
