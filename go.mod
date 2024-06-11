@@ -1,6 +1,6 @@
 module github.com/sensu/sensu-email-handler
 
-go 1.14
+go 1.22
 
 require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
