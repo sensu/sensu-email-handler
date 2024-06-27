@@ -6,25 +6,24 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	htemplate "html/template"
-	"io"
-	"io/ioutil"
-	"math"
-	"net"
-	"net/mail"
-	"net/smtp"
-	"strconv"
-	"strings"
-	ttemplate "text/template"
-	"time"
-
 	"github.com/Masterminds/sprig"
 	"github.com/google/uuid"
 	corev2 "github.com/sensu/sensu-go/api/core/v2"
 	"github.com/sensu/sensu-plugin-sdk/sensu"
+	htemplate "html/template"
+	"io"
+	"math"
+	"net"
+	"net/mail"
+	"net/smtp"
+	"os"
+	"strconv"
+	"strings"
+	ttemplate "text/template"
+	"time"
 )
 
-//HandlerConfig config options for email handler.
+// HandlerConfig config options for email handler.
 type HandlerConfig struct {
 	sensu.PluginConfig
 	SmtpHost         string
@@ -262,7 +261,7 @@ func checkArgs(_ *corev2.Event) error {
 	if config.Hookout {
 		emailBodyTemplate = "{{.Check.Output}}\n{{range .Check.Hooks}}Hook Name:  {{.Name}}\nHook Command:  {{.Command}}\n\n{{.Output}}\n\n{{end}}"
 	} else if len(config.BodyTemplateFile) > 0 {
-		templateBytes, fileErr := ioutil.ReadFile(config.BodyTemplateFile)
+		templateBytes, fileErr := os.ReadFile(config.BodyTemplateFile)
 		if fileErr != nil {
 			return fmt.Errorf("failed to read specified template file %s", config.BodyTemplateFile)
 		}
@@ -411,11 +410,11 @@ func resolveTemplate(templateValue string, event *corev2.Event, contentType stri
 	return resolved.String(), nil
 }
 
-//newRcpts trims "spaces" and checks each toEmails for commas.
+// newRcpts trims "spaces" and checks each toEmails for commas.
 // Any additional rcpts via commas appends to the end.
 func newRcpts(toEmails []string) rcpts {
 	tos := make([]string, len(toEmails))
-	ntos := []string{}
+	var ntos []string
 
 	for i, t := range toEmails {
 		ts := strings.Split(t, ",")
@@ -424,7 +423,7 @@ func newRcpts(toEmails []string) rcpts {
 			continue
 		}
 
-		// first 1 aleady in slice
+		// first 1 already in slice
 		for _, tt := range ts[1:] {
 			ntos = append(ntos, strings.TrimSpace(tt))
 		}
@@ -458,7 +457,7 @@ func LoginAuth(username, password string) smtp.Auth {
 	return &loginAuth{username, password}
 }
 
-func (a *loginAuth) Start(server *smtp.ServerInfo) (string, []byte, error) {
+func (a *loginAuth) Start(_ *smtp.ServerInfo) (string, []byte, error) {
 	return "LOGIN", []byte(a.username), nil
 }
 
