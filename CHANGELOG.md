@@ -6,6 +6,11 @@ and this project adheres to [Semantic
 Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+# [1.2.4] - 2025-02-13
+
+### Added
+- Support for darwin/arm64 build
+
 # [1.2.3] - 2024-06-11
 
 ### Fixed
