@@ -45,7 +45,7 @@ Flags:
   -u, --smtpUsername string       The SMTP username, if not in env SMTP_USERNAME
   -S, --subjectTemplate string    A template to use for the subject (default "Sensu Alert - {{.Entity.Name}}/{{.Check.Name}}: {{.Check.State}}")
   -k, --tlsSkipVerify             Do not verify TLS certificates
-  -t, --toEmail string            The 'to' email address (accepts comma delimited and/or multiple flags)
+  -t, --toEmail string            The 'to' email address. Accepts comma delimited and/or multiple flags. Accepts template vars: alice-{{.Entity.Name}}@example.com
 ```
 
 ### Environment variables
